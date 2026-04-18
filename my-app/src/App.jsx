@@ -169,7 +169,7 @@ function App() {
 
   return (
     <div className="app">
-      <canvas id="auroraCanvas" className="aurora-canvas"></canvas>
+      {/* <canvas id="auroraCanvas" className="aurora-canvas"></canvas>
 
       <header className="header">
         <div className="container">
@@ -301,7 +301,7 @@ function App() {
         <div className="container">
           <p>© 2026 Совхоз "Пуровский". Все права защищены.</p>
         </div>
-      </footer>
+      </footer> */}
     </div>
   )
 }
