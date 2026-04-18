@@ -374,7 +374,7 @@ function App() {
           </div>
         </section>
 
-      {/* Секция "Продукция" - компактная, перед документами */}
+      {/* Секция "Продукция"  */}
 <section 
   id="products" 
   className="section"
