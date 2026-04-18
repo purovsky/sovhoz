@@ -1,5 +1,7 @@
 // src/App.jsx
 import './App.css'
+import logo from './assets/logo.png'
+import HeaderBorder from './components/HeaderBorder';
 
 // Импорт современных шрифтов Google Fonts
 const fontLink = document.createElement('link')
@@ -8,22 +10,35 @@ fontLink.rel = 'stylesheet'
 document.head.appendChild(fontLink)
 
 import { useState, useEffect, useRef } from 'react'
-
-// Компонент секции "О нас" с текстом и квадратным изображением
+// Компонент секции "О нас" с текстом и круглым логотипом на белом фоне
 const AboutSection = () => (
   <div className="about-wrapper">
     <div className="about-text">
-      <p>Совхоз "Пуровский" — ведущее сельскохозяйственное предприятие Ямало-Ненецкого автономного округа. Мы занимаемся производством и переработкой сельскохозяйственной продукции в суровых условиях Крайнего Севера.</p>
-      <p>Наша миссия — обеспечение населения качественными продуктами питания, произведёнными с учётом северных традиций и современных технологий.</p>
-      <p>Основные направления деятельности: животноводство (крупный рогатый скот, оленеводство), растениеводство в защищённом грунте, переработка молочной и мясной продукции.</p>
-      <p>Мы гордимся нашими сотрудниками, которые ежедневно вносят вклад в продовольственную безопасность региона.</p>
+      <p>АО «Совхоз Пуровский» – одно из крупных и стабильно развивающихся хозяйств не только Пуровского района, но и Ямало-Ненецкого автономного округа. Успех его деятельности связан с трудолюбием оленеводов и рыбаков, а также с профессиональным опытом руководителей всех подразделений совхоза. Какие бы задачи ни ставило время, коллектив умеет намеченные планы выполнять, а трудности, возникающие на пути, преодолевать целеустремленно и с неизменным положительным результатом.</p>
+      <p>АО «Совхоз Пуровский» обеспечивает рабочими местами большую часть тундрового населения района и жителей села Самбург, он является поселкообразующим предприятием этого муниципального образования.</p>
     </div>
     <div className="about-image">
-      <img 
-        src="https://sovhozpur.ru/wp-content/uploads/2021/09/IMG_20210902_143426-scaled.jpg" 
-        alt="Совхоз Пуровский"
-        loading="lazy"
-      />
+      <div style={{
+        backgroundColor: '#ffffff',
+        borderRadius: '50%',
+        padding: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)'
+      }}>
+        <img 
+          src={logo}
+          alt="Логотип Совхоз Пуровский"
+          loading="lazy"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            borderRadius: '50%'
+          }}
+        />
+      </div>
     </div>
   </div>
 )
@@ -37,6 +52,17 @@ function App() {
   const [hoveredSection, setHoveredSection] = useState(null)
   const [isDarkTheme, setIsDarkTheme] = useState(true)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+useEffect(() => {
+  const handleResize = () => setWindowWidth(window.innerWidth);
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
+const isMobile = windowWidth <= 768;
+const imageHeight = isMobile ? 250 : 350;
+const slideMinHeight = isMobile ? 300 : 450;
 
   const galleryImages = [
     {
@@ -61,7 +87,7 @@ function App() {
     }
   ]
 
-  // Данные о продукции (без единиц измерения)
+  // Данные о продукции
   const products = [
     { name: "Мясо оленей I категории", category: "Оленина" },
     { name: "Мясо оленей II категории", category: "Оленина" },
@@ -105,6 +131,7 @@ function App() {
     localStorage.setItem('theme', !isDarkTheme ? 'dark' : 'light')
   }
 
+
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'light') {
@@ -132,6 +159,30 @@ function App() {
         setImagesLoaded(prev => ({ ...prev, [idx]: true }))
       }
     })
+  }, [])
+
+  // Отслеживание активной секции при скролле
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['about', 'gallery', 'products', 'documents', 'contacts']
+      const scrollPosition = window.scrollY + 150
+
+      for (const section of sections) {
+        const element = document.getElementById(section)
+        if (element) {
+          const offsetTop = element.offsetTop
+          const offsetBottom = offsetTop + element.offsetHeight
+          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
+            setActiveSection(section)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   const onTouchStart = (e) => {
@@ -173,6 +224,7 @@ function App() {
     }
   }
 
+  // Эффект северного сияния
   useEffect(() => {
     if (!isDarkTheme) return
     
@@ -242,20 +294,23 @@ function App() {
         }
       }
       
-      for (let i = 0; i < 30; i++) {
-        const x = Math.random() * canvas.width
-        const y = canvas.height * (0.15 + Math.random() * 0.5)
-        const radius = 30 + Math.random() * 80
-        const opacity = 0.03 + Math.random() * 0.07
-        
-        const spotGradient = ctx.createRadialGradient(x, y, 0, x, y, radius)
-        spotGradient.addColorStop(0, `rgba(80, 200, 140, ${opacity})`)
-        spotGradient.addColorStop(0.5, `rgba(60, 160, 120, ${opacity * 0.5})`)
-        spotGradient.addColorStop(1, `rgba(40, 120, 80, 0)`)
-        
-        ctx.fillStyle = spotGradient
-        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2)
-      }
+// Светящиеся пятна (очень медленное движение, но видимые)
+for (let i = 0; i < 35; i++) {
+  // Используем синус с очень маленьким коэффициентом для плавного движения
+  const x = (Math.sin(i * 5.3 + time * 0.0006) * 0.4 + 0.5) * canvas.width
+  const y = canvas.height * (0.2 + Math.sin(i * 3.7 + time * 0.0004) * 0.15)
+  const radius = 50 + Math.sin(i * 2.1) * 25
+  const opacity = 0.06 + Math.sin(i * 2.5) * 0.03
+  
+  const spotGradient = ctx.createRadialGradient(x, y, 0, x, y, radius)
+  spotGradient.addColorStop(0, `rgba(100, 220, 150, ${opacity})`)
+  spotGradient.addColorStop(0.4, `rgba(70, 180, 120, ${opacity * 0.6})`)
+  spotGradient.addColorStop(0.7, `rgba(50, 140, 100, ${opacity * 0.3})`)
+  spotGradient.addColorStop(1, `rgba(40, 100, 70, 0)`)
+  
+  ctx.fillStyle = spotGradient
+  ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2)
+}
       
       time++
       animationId = requestAnimationFrame(drawAurora)
@@ -277,7 +332,7 @@ function App() {
     about: 'О нас',
     gallery: 'Галерея',
     products: 'Продукция',
-    documents: 'Документы',
+    documents: 'Документация',
     contacts: 'Контакты'
   }
 
@@ -286,12 +341,15 @@ function App() {
       {isDarkTheme && <canvas id="auroraCanvas" className="aurora-canvas"></canvas>}
 
       <header className="header">
+       {!isDarkTheme && !isMobile && <HeaderBorder />}
+  
+
         <div className="container">
           <div className="header-content">
-            <h1 className="logo">Совхоз "Пуровский"</h1>
+            <h1 className="logo" style={{color: 'white'}}>Совхоз "Пуровский"</h1>
             
             {/* Десктопная навигация */}
-            <div className="header-right desktop-nav">
+            <div className="desktop-nav">
               <nav className="nav">
                 {sections.map((section) => (
                   <button
@@ -314,7 +372,7 @@ function App() {
               </button>
             </div>
 
-            {/* Бургер-меню для мобильных */}
+            {/* Мобильные контролы: тогл + бургер */}
             <div className="mobile-controls">
               <button 
                 className={`theme-toggle mobile ${isDarkTheme ? 'dark' : 'light'}`} 
@@ -355,24 +413,14 @@ function App() {
       </div>
 
       <main>
-        <section 
-          id="about" 
-          className="section"
-          onMouseEnter={() => setHoveredSection('about')}
-          onMouseLeave={() => setHoveredSection(null)}
-        >
+        <section id="about" className="section">
           <div className="container">
-            <h2 className="section-title">О нас</h2>
+            <h2 className="section-title"></h2>
             <AboutSection />
           </div>
         </section>
 
-        <section 
-          id="gallery" 
-          className="section"
-          onMouseEnter={() => setHoveredSection('gallery')}
-          onMouseLeave={() => setHoveredSection(null)}
-        >
+        {/* <section id="gallery" className="section">
           <div className="container">
             <h2 className="section-title">Галерея</h2>
             <div className="carousel-container">
@@ -407,54 +455,111 @@ function App() {
               ))}
             </div>
           </div>
-        </section>
-
-        {/* Секция "Продукция" */}
-        <section 
-          id="products" 
-          className="section"
-          onMouseEnter={() => setHoveredSection('products')}
-          onMouseLeave={() => setHoveredSection(null)}
+        </section> */}
+<section 
+  id="gallery" 
+  className="section"
+  onMouseEnter={() => setHoveredSection('gallery')}
+  onMouseLeave={() => setHoveredSection(null)}
+>
+  <div className="container">
+    <h2 className="section-title">Галерея</h2>
+    <div className="carousel-container">
+      <button className="carousel-btn prev" onClick={prevImage}>❮</button>
+      <div 
+        className="carousel-slide"
+        style={{
+          flex: 1,
+          textAlign: 'center',
+          cursor: 'pointer',
+          minHeight: '450px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden'
+        }}
+      >
+        <div
+          style={{
+            width: isMobile ? '300px' : '500px',
+            maxWidth: '700px',
+            height: '350px',
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '16px'
+          }}
         >
+          <div
+            key={currentImageIndex}
+            style={{
+              width: '100%',
+              height: '100%',
+              background: isDarkTheme ? '#2a3a2f' : '#d0d8d0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '48px',
+              color: isDarkTheme ? '#8bc34a' : '#2a8ab0',
+              animation: 'slideIn 0.4s ease-out'
+            }}
+          >
+            
+          </div>
+        </div>
+        <p className="image-caption" style={{ marginTop: '16px' }}>Описание изображения {currentImageIndex + 1}</p>
+      </div>
+      <button className="carousel-btn next" onClick={nextImage}>❯</button>
+    </div>
+    <div className="carousel-dots">
+      {[...Array(5)].map((_, index) => (
+        <button
+          key={index}
+          className={`dot ${currentImageIndex === index ? 'active' : ''}`}
+          onClick={() => setCurrentImageIndex(index)}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+        <section id="products" className="section">
           <div className="container">
             <h2 className="section-title">Продукция</h2>
             
-            <div style={{
+            <div className="products-info-block" style={{
               textAlign: 'center',
               marginBottom: '30px',
               padding: '16px 20px',
               background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
               backdropFilter: 'blur(8px)',
-              borderRadius: '12px',
-              boxShadow: isDarkTheme ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'
+              borderRadius: '12px'
             }}>
               <p style={{ 
                 fontSize: '14px', 
                 lineHeight: 1.5, 
                 marginBottom: '10px',
-                color: isDarkTheme ? '#d0d8d0' : '#1a2a3a',
-                fontWeight: isDarkTheme ? '400' : '500'
+                color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
               }}>
-                АО "Совхоз Пуровский" предлагает свежую продукцию и полуфабрикаты из оленины и рыбы.
+                АО "Совхоз Пуровский" предлагает свежезамороженную продукцию и полуфабрикаты из оленины и рыбы.
               </p>
               <p style={{ 
                 fontSize: '13px', 
-                color: isDarkTheme ? '#b0d0b0' : '#1a6a8a',
-                fontWeight: isDarkTheme ? '400' : '500'
+                color: isDarkTheme ? '#b0d0b0' : '#1a6a8a'
               }}>
                 По вопросам приобретения: 
-                <strong style={{ fontWeight: 600 }}> +7(908)855-29-35</strong> (Пётр Константинович) или 
-                <strong style={{ fontWeight: 600 }}> inbox@sovhozpur.ru</strong>
+                <strong> +7(908)855-29-35</strong> (Пётр Константинович) или 
+                <strong> inbox@sovhozpur.ru</strong>
               </p>
             </div>
 
             {Object.entries(groupedProducts).map(([category, items]) => (
-              <div key={category} style={{ marginBottom: '30px' }}>
+              <div key={category} style={{ marginBottom: '25px' }}>
                 <h3 style={{
                   fontSize: '20px',
                   fontFamily: 'Montserrat, sans-serif',
-                  marginBottom: '15px',
-                  color: isDarkTheme ? '#b0d0b0' : '#1a5a7a',
+                  marginBottom: '12px',
+                  color: isDarkTheme ? '#b0d0b0' : '##1e3279',
                   borderLeft: `3px solid ${isDarkTheme ? '#7CB342' : '#2a8ab0'}`,
                   paddingLeft: '12px'
                 }}>{category}</h3>
@@ -464,11 +569,10 @@ function App() {
                       background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
                       backdropFilter: 'blur(4px)',
                       borderRadius: '8px',
-                      padding: '6px 12px',
+                      padding: '8px 12px',
                       transition: 'all 0.2s ease',
                       border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(42, 138, 176, 0.25)'}`,
                       fontSize: '13px',
-                      fontWeight: isDarkTheme ? '400' : '500',
                       color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
                     }}>
                       {product.name}
@@ -488,8 +592,7 @@ function App() {
             }}>
               <p style={{ 
                 fontSize: '12px',
-                color: isDarkTheme ? '#b0d0b0' : '#3a6a7a',
-                fontWeight: isDarkTheme ? '400' : '500'
+                color: isDarkTheme ? '#b0d0b0' : '#3a6a7a'
               }}>
                 На всю продукцию имеются сертификаты качества
               </p>
@@ -497,72 +600,157 @@ function App() {
           </div>
         </section>
 
-        <section 
-          id="documents" 
-          className="section"
-          onMouseEnter={() => setHoveredSection('documents')}
-          onMouseLeave={() => setHoveredSection(null)}
-        >
-          <div className="container">
-            <h2 className="section-title">Документы</h2>
-            <div className="documents-grid">
-              {[
-                { name: "Устав предприятия", link: "#" },
-                { name: "Лицензии и сертификаты", link: "#" },
-                { name: "Годовой отчет 2024", link: "#" },
-                { name: "Коллективный договор", link: "#" }
-              ].map((doc, index) => (
-                <div key={index} className="document-card">
-                  <h3 className="document-name">{doc.name}</h3>
-                  <a href={doc.link} className="download-btn" download>Скачать</a>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+       <section 
+  id="documents" 
+  className="section"
+  onMouseEnter={() => setHoveredSection('documents')}
+  onMouseLeave={() => setHoveredSection(null)}
+>
+  <div className="container">
+    <h2 className="section-title">Документы</h2>
+    <div className="documents-grid">
+      {[
+        { name: "Документ 1", link: "#" },
+        { name: "Документ 2", link: "#" },
+        { name: "Документ 3", link: "#" },
+        { name: "Документ 4", link: "#" },
+        { name: "Документ 5", link: "#" },
+        { name: "Документ 6", link: "#" }
+      ].map((doc, index) => (
+        <div key={index} className="document-card">
+          <h3 className="document-name">{doc.name}</h3>
+          <a href={doc.link} className="download-btn" download>Скачать</a>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+      
+<section 
+  id="contacts" 
+  className="section"
+  onMouseEnter={() => setHoveredSection('contacts')}
+  onMouseLeave={() => setHoveredSection(null)}
+>
+  <div className="container">
+    <h2 className="section-title">Контакты</h2>
+    
+    <div className="contacts-grid-wrapper" style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '2rem',
+      background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
+      backdropFilter: 'blur(8px)',
+      borderRadius: '24px',
+      padding: '2rem',
+      border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(100, 180, 200, 0.3)'}`
+    }}>
+      
+      {/* Левая колонка - контакты */}
+      <div className="contacts-info-block">
+        <div style={{ marginBottom: '1.5rem' }}>
+          <strong style={{ 
+            fontSize: '16px',
+            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: 600,
+            marginBottom: '8px',
+            display: 'block',
+            color: isDarkTheme ? '#b0d0b0' : '##1e3279'
+          }}>Телефон</strong>
+          <p style={{ marginTop: '8px' }}>
+            <a href="tel:+73499512345" style={{ 
+              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }}>+7 (34999) 5-12-34</a>
+          </p>
+          <p>
+            <a href="tel:+73499516789" style={{ 
+              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }}>+7 (34999) 5-67-89</a>
+          </p>
+        </div>
+        
+        <div style={{ marginBottom: '1.5rem' }}>
+          <strong style={{ 
+            fontSize: '16px',
+            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: 600,
+            marginBottom: '8px',
+            display: 'block',
+            color: isDarkTheme ? '#b0d0b0' : '##1e3279'
+          }}>E-mail</strong>
+          <p style={{ marginTop: '8px' }}>
+            <a href="mailto:info@purovsky-sovhoz.ru" style={{ 
+              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }}>info@purovsky-sovhoz.ru</a>
+          </p>
+          <p>
+            <a href="mailto:zakaz@sovhozpur.ru" style={{ 
+              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }}>zakaz@sovhozpur.ru</a>
+          </p>
+        </div>
+        
+        <div>
+          <strong style={{ 
+            fontSize: '16px',
+            fontFamily: 'Montserrat, sans-serif',
+            fontWeight: 600,
+            marginBottom: '8px',
+            display: 'block',
+            color: isDarkTheme ? '#b0d0b0' : '##1e3279'
+          }}>Адрес</strong>
+          <p style={{ 
+            marginTop: '8px',
+            color: isDarkTheme ? '#d0d8d0' : '#2a3a4a',
+            lineHeight: 1.5
+          }}>
+            Ямало-Ненецкий АО, Пуровский район,<br />
+            пос. Пуровск, ул. Совхозная, 1
+          </p>
+        </div>
+      </div>
+      
+      {/* Правая колонка - Яндекс.Карта */}
+      <div className="contacts-map-block">
+        <iframe 
+          src="https://yandex.ru/map-widget/v1/?ll=77.6667,64.9167&z=12&pt=77.6667,64.9167,pm2rdl"
+          width="100%" 
+          height="250" 
+          style={{ border: 0, borderRadius: '16px' }}
+          allowFullScreen
+          loading="lazy"
+          title="Карта совхоза Пуровский"
+        />
+        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+          <a 
+            href="https://yandex.ru/maps/?text=Пуровск+Совхозная+1" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              color: isDarkTheme ? '#8bc34a' : '#2a8ab0', 
+              fontSize: '13px', 
+              textDecoration: 'none',
+              transition: 'color 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.color = isDarkTheme ? '#a0e0a0' : '#1a6a8a'}
+            onMouseLeave={(e) => e.target.style.color = isDarkTheme ? '#8bc34a' : '#2a8ab0'}
+          >
+            Открыть в Яндекс.Картах →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <section 
-          id="contacts" 
-          className="section"
-          onMouseEnter={() => setHoveredSection('contacts')}
-          onMouseLeave={() => setHoveredSection(null)}
-        >
-          <div className="container">
-            <h2 className="section-title">Контакты</h2>
-            <div className="contacts-grid">
-              <div className="contacts-info">
-                <div className="contact-item">
-                  <span className="contact-icon">📍</span>
-                  <p>Россия, ЯНАО, Пуровский район, с.Самбург, ул. Производственная, д.1</p>
-                </div>
-                <div className="contact-item">
-                  <span className="contact-icon">📞</span>
-                  <p>+7 (951) 988-09-91; +7(900) 400-63-26</p>
-                </div>
-                <div className="contact-item">
-                  <span className="contact-icon">✉️</span>
-                  <p>inbox@sovhozpur.ru</p>
-                </div>
-                <div className="contact-social">
-                  <a href="#" className="social-icon">📘</a>
-                  <a href="#" className="social-icon">📸</a>
-                  <a href="#" className="social-icon">💬</a>
-                </div>
-              </div>
-              <div className="contacts-map">
-                <iframe 
-                  src="https://yandex.ru/map-widget/v1/?ll=77.6667,64.9167&z=12&pt=77.6667,64.9167,pm2rdl"
-                  width="100%" 
-                  height="300" 
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  title="Карта совхоза Пуровский"
-                ></iframe>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="footer">
