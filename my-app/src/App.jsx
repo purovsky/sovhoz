@@ -36,6 +36,7 @@ function App() {
   const [imagesLoaded, setImagesLoaded] = useState({})
   const [hoveredSection, setHoveredSection] = useState(null)
   const [isDarkTheme, setIsDarkTheme] = useState(true)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const galleryImages = [
     {
@@ -62,13 +63,11 @@ function App() {
 
   // Данные о продукции (без единиц измерения)
   const products = [
-    // Мясо оленя
     { name: "Мясо оленей I категории", category: "Оленина" },
     { name: "Мясо оленей II категории", category: "Оленина" },
     { name: "Оленина «Праздничная»", category: "Оленина" },
     { name: "Фарш олений замороженный", category: "Оленина" },
     { name: "Шея оленя", category: "Оленина" },
-    // Рыба
     { name: "Щекур крупный (Чир)", category: "Рыба" },
     { name: "Щекур", category: "Рыба" },
     { name: "Пыжьян", category: "Рыба" },
@@ -89,27 +88,23 @@ function App() {
     { name: "Чипсы", category: "Рыба" },
     { name: "Филе налима", category: "Рыба" },
     { name: "Филе щуки", category: "Рыба" },
-    // Субпродукты и другое
     { name: "Языки", category: "Субпродукты" },
     { name: "Сердце", category: "Субпродукты" },
     { name: "Почки", category: "Субпродукты" },
     { name: "Камусы оленя", category: "Субпродукты" }
   ]
 
-  // Группировка продуктов по категориям
   const groupedProducts = products.reduce((acc, product) => {
     if (!acc[product.category]) acc[product.category] = []
     acc[product.category].push(product)
     return acc
   }, {})
 
-  // Переключение темы
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme)
     localStorage.setItem('theme', !isDarkTheme ? 'dark' : 'light')
   }
 
-  // Загрузка сохраненной темы
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'light') {
@@ -119,7 +114,6 @@ function App() {
     }
   }, [])
 
-  // Применяем тему к body
   useEffect(() => {
     if (isDarkTheme) {
       document.body.classList.add('dark-theme')
@@ -130,7 +124,6 @@ function App() {
     }
   }, [isDarkTheme])
 
-  // Предзагрузка изображений
   useEffect(() => {
     galleryImages.forEach((img, idx) => {
       const image = new Image()
@@ -141,7 +134,6 @@ function App() {
     })
   }, [])
 
-  // Обработка свайпов
   const onTouchStart = (e) => {
     setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
@@ -174,13 +166,13 @@ function App() {
 
   const scrollToSection = (sectionId) => {
     setActiveSection(sectionId)
+    setIsMenuOpen(false)
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
-  // Эффект северного сияния
   useEffect(() => {
     if (!isDarkTheme) return
     
@@ -280,6 +272,15 @@ function App() {
     }
   }, [isDarkTheme])
 
+  const sections = ['about', 'gallery', 'products', 'documents', 'contacts']
+  const sectionNames = {
+    about: 'О нас',
+    gallery: 'Галерея',
+    products: 'Продукция',
+    documents: 'Документы',
+    contacts: 'Контакты'
+  }
+
   return (
     <div className={`app ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       {isDarkTheme && <canvas id="auroraCanvas" className="aurora-canvas"></canvas>}
@@ -288,23 +289,20 @@ function App() {
         <div className="container">
           <div className="header-content">
             <h1 className="logo">Совхоз "Пуровский"</h1>
-            <div className="header-right">
+            
+            {/* Десктопная навигация */}
+            <div className="header-right desktop-nav">
               <nav className="nav">
-                {['about', 'gallery', 'products', 'documents', 'contacts'].map((section) => (
+                {sections.map((section) => (
                   <button
                     key={section}
                     className={`nav-link ${activeSection === section ? 'active' : ''}`}
                     onClick={() => scrollToSection(section)}
                   >
-                    {section === 'about' && 'О нас'}
-                    {section === 'gallery' && 'Галерея'}
-                    {section === 'products' && 'Продукция'}
-                    {section === 'documents' && 'Документы'}
-                    {section === 'contacts' && 'Контакты'}
+                    {sectionNames[section]}
                   </button>
                 ))}
               </nav>
-              
               <button 
                 className={`theme-toggle ${isDarkTheme ? 'dark' : 'light'}`} 
                 onClick={toggleTheme}
@@ -315,9 +313,46 @@ function App() {
                 </div>
               </button>
             </div>
+
+            {/* Бургер-меню для мобильных */}
+            <div className="mobile-controls">
+              <button 
+                className={`theme-toggle mobile ${isDarkTheme ? 'dark' : 'light'}`} 
+                onClick={toggleTheme}
+                aria-label="Переключить тему"
+              >
+                <div className="toggle-track">
+                  <div className="toggle-thumb"></div>
+                </div>
+              </button>
+              <button 
+                className={`burger-menu ${isMenuOpen ? 'open' : ''}`} 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Меню"
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
+
+      {/* Мобильное меню */}
+      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-menu-content">
+          {sections.map((section) => (
+            <button
+              key={section}
+              className={`mobile-nav-link ${activeSection === section ? 'active' : ''}`}
+              onClick={() => scrollToSection(section)}
+            >
+              {sectionNames[section]}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <main>
         <section 
@@ -374,97 +409,93 @@ function App() {
           </div>
         </section>
 
-      {/* Секция "Продукция"  */}
-<section 
-  id="products" 
-  className="section"
-  onMouseEnter={() => setHoveredSection('products')}
-  onMouseLeave={() => setHoveredSection(null)}
->
-  <div className="container">
-    <h2 className="section-title">Продукция</h2>
-    
-    <div style={{
-      textAlign: 'center',
-      marginBottom: '30px',
-      padding: '16px 20px',
-      background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
-      backdropFilter: 'blur(8px)',
-      borderRadius: '12px',
-      boxShadow: isDarkTheme ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'
-    }}>
-      <p style={{ 
-        fontSize: '14px', 
-        lineHeight: 1.5, 
-        marginBottom: '10px',
-        color: isDarkTheme ? '#d0d8d0' : '#1a2a3a',
-        fontWeight: isDarkTheme ? '400' : '500'
-      }}>
-        АО "Совхоз Пуровский" предлагает свежую продукцию и полуфабрикаты из оленины и рыбы.
-      </p>
-      <p style={{ 
-        fontSize: '13px', 
-        color: isDarkTheme ? '#b0d0b0' : '#1a6a8a',
-        fontWeight: isDarkTheme ? '400' : '500'
-      }}>
-        По вопросам приобретения: 
-        <strong style={{ fontWeight: 600 }}> +7(908)855-29-35</strong> (Пётр Константинович) или 
-        <strong style={{ fontWeight: 600 }}> inbox@sovhozpur.ru</strong>
-      </p>
-    </div>
-
-    {Object.entries(groupedProducts).map(([category, items]) => (
-      <div key={category} style={{ marginBottom: '30px' }}>
-        <h3 style={{
-          fontSize: '20px',
-          fontFamily: 'Montserrat, sans-serif',
-          marginBottom: '15px',
-          color: isDarkTheme ? '#b0d0b0' : '#1a5a7a',
-          borderLeft: `3px solid ${isDarkTheme ? '#7CB342' : '#2a8ab0'}`,
-          paddingLeft: '12px'
-        }}>{category}</h3>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-          gap: '8px'
-        }}>
-          {items.map((product, idx) => (
-            <div key={idx} style={{
-              background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(4px)',
-              borderRadius: '8px',
-              padding: '6px 12px',
-              transition: 'all 0.2s ease',
-              border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(42, 138, 176, 0.25)'}`,
-              fontSize: '13px',
-              fontWeight: isDarkTheme ? '400' : '500',
-              color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
+        {/* Секция "Продукция" */}
+        <section 
+          id="products" 
+          className="section"
+          onMouseEnter={() => setHoveredSection('products')}
+          onMouseLeave={() => setHoveredSection(null)}
+        >
+          <div className="container">
+            <h2 className="section-title">Продукция</h2>
+            
+            <div style={{
+              textAlign: 'center',
+              marginBottom: '30px',
+              padding: '16px 20px',
+              background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '12px',
+              boxShadow: isDarkTheme ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'
             }}>
-              {product.name}
+              <p style={{ 
+                fontSize: '14px', 
+                lineHeight: 1.5, 
+                marginBottom: '10px',
+                color: isDarkTheme ? '#d0d8d0' : '#1a2a3a',
+                fontWeight: isDarkTheme ? '400' : '500'
+              }}>
+                АО "Совхоз Пуровский" предлагает свежую продукцию и полуфабрикаты из оленины и рыбы.
+              </p>
+              <p style={{ 
+                fontSize: '13px', 
+                color: isDarkTheme ? '#b0d0b0' : '#1a6a8a',
+                fontWeight: isDarkTheme ? '400' : '500'
+              }}>
+                По вопросам приобретения: 
+                <strong style={{ fontWeight: 600 }}> +7(908)855-29-35</strong> (Пётр Константинович) или 
+                <strong style={{ fontWeight: 600 }}> inbox@sovhozpur.ru</strong>
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
-    ))}
 
-    <div style={{
-      textAlign: 'center',
-      marginTop: '20px',
-      padding: '12px',
-      background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
-      backdropFilter: 'blur(8px)',
-      borderRadius: '10px'
-    }}>
-      <p style={{ 
-        fontSize: '12px',
-        color: isDarkTheme ? '#b0d0b0' : '#3a6a7a',
-        fontWeight: isDarkTheme ? '400' : '500'
-      }}>
-        На всю продукцию имеются сертификаты качества
-      </p>
-    </div>
-  </div>
-</section>
+            {Object.entries(groupedProducts).map(([category, items]) => (
+              <div key={category} style={{ marginBottom: '30px' }}>
+                <h3 style={{
+                  fontSize: '20px',
+                  fontFamily: 'Montserrat, sans-serif',
+                  marginBottom: '15px',
+                  color: isDarkTheme ? '#b0d0b0' : '#1a5a7a',
+                  borderLeft: `3px solid ${isDarkTheme ? '#7CB342' : '#2a8ab0'}`,
+                  paddingLeft: '12px'
+                }}>{category}</h3>
+                <div className="products-grid">
+                  {items.map((product, idx) => (
+                    <div key={idx} className="product-card" style={{
+                      background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
+                      backdropFilter: 'blur(4px)',
+                      borderRadius: '8px',
+                      padding: '6px 12px',
+                      transition: 'all 0.2s ease',
+                      border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(42, 138, 176, 0.25)'}`,
+                      fontSize: '13px',
+                      fontWeight: isDarkTheme ? '400' : '500',
+                      color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
+                    }}>
+                      {product.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div style={{
+              textAlign: 'center',
+              marginTop: '20px',
+              padding: '12px',
+              background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '10px'
+            }}>
+              <p style={{ 
+                fontSize: '12px',
+                color: isDarkTheme ? '#b0d0b0' : '#3a6a7a',
+                fontWeight: isDarkTheme ? '400' : '500'
+              }}>
+                На всю продукцию имеются сертификаты качества
+              </p>
+            </div>
+          </div>
+        </section>
 
         <section 
           id="documents" 
@@ -474,53 +505,16 @@ function App() {
         >
           <div className="container">
             <h2 className="section-title">Документы</h2>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '20px',
-              maxWidth: '700px',
-              margin: '0 auto',
-              width: '100%'
-            }}>
+            <div className="documents-grid">
               {[
                 { name: "Устав предприятия", link: "#" },
                 { name: "Лицензии и сертификаты", link: "#" },
                 { name: "Годовой отчет 2024", link: "#" },
                 { name: "Коллективный договор", link: "#" }
               ].map((doc, index) => (
-                <div key={index} className="document-card" style={{
-                  background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
-                  backdropFilter: 'blur(8px)',
-                  borderRadius: '14px',
-                  padding: '18px 20px',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 3px 10px rgba(0, 0, 0, 0.2)',
-                  border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(100, 180, 200, 0.3)'}`,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center'
-                }}>
-                  <h3 className="document-name" style={{
-                    fontSize: '15px',
-                    fontFamily: 'Montserrat, sans-serif',
-                    fontWeight: 600,
-                    marginBottom: '14px',
-                    color: isDarkTheme ? '#b0d0b0' : '#1a6a8a'
-                  }}>{doc.name}</h3>
-                  <a href={doc.link} className="download-btn" download style={{
-                    display: 'inline-block',
-                    background: isDarkTheme ? 'rgba(80, 150, 80, 0.25)' : 'rgba(42, 138, 176, 0.15)',
-                    color: isDarkTheme ? '#c0e0c0' : '#1a6a8a',
-                    padding: '6px 20px',
-                    borderRadius: '30px',
-                    textDecoration: 'none',
-                    fontSize: '12px',
-                    fontWeight: 500,
-                    border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.3)' : 'rgba(42, 138, 176, 0.3)'}`,
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer'
-                  }}>Скачать</a>
+                <div key={index} className="document-card">
+                  <h3 className="document-name">{doc.name}</h3>
+                  <a href={doc.link} className="download-btn" download>Скачать</a>
                 </div>
               ))}
             </div>
