@@ -1,47 +1,15 @@
 // src/App.jsx
 import './App.css'
 import logo from './assets/logo.png'
+import map from './assets/map.png'
 import HeaderBorder from './components/HeaderBorder';
 
-// Импорт современных шрифтов Google Fonts
 const fontLink = document.createElement('link')
 fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Montserrat:wght@400;500;600;700&display=swap'
 fontLink.rel = 'stylesheet'
 document.head.appendChild(fontLink)
 
 import { useState, useEffect, useRef } from 'react'
-// Компонент секции "О нас" с текстом и круглым логотипом на белом фоне
-const AboutSection = () => (
-  <div className="about-wrapper">
-    <div className="about-text">
-      <p>АО «Совхоз Пуровский» – одно из крупных и стабильно развивающихся хозяйств не только Пуровского района, но и Ямало-Ненецкого автономного округа. Успех его деятельности связан с трудолюбием оленеводов и рыбаков, а также с профессиональным опытом руководителей всех подразделений совхоза. Какие бы задачи ни ставило время, коллектив умеет намеченные планы выполнять, а трудности, возникающие на пути, преодолевать целеустремленно и с неизменным положительным результатом.</p>
-      <p>АО «Совхоз Пуровский» обеспечивает рабочими местами большую часть тундрового населения района и жителей села Самбург, он является поселкообразующим предприятием этого муниципального образования.</p>
-    </div>
-    <div className="about-image">
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: '50%',
-        padding: '10px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)'
-      }}>
-        <img 
-          src={logo}
-          alt="Логотип Совхоз Пуровский"
-          loading="lazy"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            borderRadius: '50%'
-          }}
-        />
-      </div>
-    </div>
-  </div>
-)
 
 function App() {
   const [activeSection, setActiveSection] = useState('about')
@@ -49,20 +17,37 @@ function App() {
   const [touchStart, setTouchStart] = useState(null)
   const [touchEnd, setTouchEnd] = useState(null)
   const [imagesLoaded, setImagesLoaded] = useState({})
-  const [hoveredSection, setHoveredSection] = useState(null)
   const [isDarkTheme, setIsDarkTheme] = useState(true)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [activeTab, setActiveTab] = useState('mission')
+  const [isFishingOpen, setIsFishingOpen] = useState(false)
+  const [isAquacultureOpen, setIsAquacultureOpen] = useState(false)
+  const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1)
 
-useEffect(() => {
-  const handleResize = () => setWindowWidth(window.innerWidth);
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-const isMobile = windowWidth <= 768;
-const imageHeight = isMobile ? 250 : 350;
-const slideMinHeight = isMobile ? 300 : 450;
+  const isMobile = windowWidth <= 768;
+
+  const increaseFontSize = () => {
+    if (fontSizeMultiplier < 1.4) {
+      setFontSizeMultiplier(prev => prev + 0.1)
+    }
+  }
+
+  const decreaseFontSize = () => {
+    if (fontSizeMultiplier > 0.8) {
+      setFontSizeMultiplier(prev => prev - 0.1)
+    }
+  }
+
+  const getFontSize = (baseSize) => {
+    return `${baseSize * fontSizeMultiplier}px`
+  }
 
   const galleryImages = [
     {
@@ -87,50 +72,33 @@ const slideMinHeight = isMobile ? 300 : 450;
     }
   ]
 
-  // Данные о продукции
-  const products = [
-    { name: "Мясо оленей I категории", category: "Оленина" },
-    { name: "Мясо оленей II категории", category: "Оленина" },
-    { name: "Оленина «Праздничная»", category: "Оленина" },
-    { name: "Фарш олений замороженный", category: "Оленина" },
-    { name: "Шея оленя", category: "Оленина" },
-    { name: "Щекур крупный (Чир)", category: "Рыба" },
-    { name: "Щекур", category: "Рыба" },
-    { name: "Пыжьян", category: "Рыба" },
-    { name: "Сырок", category: "Рыба" },
-    { name: "Щука крупная", category: "Рыба" },
-    { name: "Щука мелкая", category: "Рыба" },
-    { name: "Налим", category: "Рыба" },
-    { name: "Ряпушка мелкая", category: "Рыба" },
-    { name: "Язь крупный", category: "Рыба" },
-    { name: "Язь мелкий", category: "Рыба" },
-    { name: "Плотва крупная", category: "Рыба" },
-    { name: "Плотва мелкая", category: "Рыба" },
-    { name: "Окунь", category: "Рыба" },
-    { name: "Фарш рыбный пищевой замороженный", category: "Рыба" },
-    { name: "Вяленая ряпушка", category: "Рыба" },
-    { name: "Вяленая щука", category: "Рыба" },
-    { name: "Стейк налима", category: "Рыба" },
-    { name: "Чипсы", category: "Рыба" },
-    { name: "Филе налима", category: "Рыба" },
-    { name: "Филе щуки", category: "Рыба" },
-    { name: "Языки", category: "Субпродукты" },
-    { name: "Сердце", category: "Субпродукты" },
-    { name: "Почки", category: "Субпродукты" },
-    { name: "Камусы оленя", category: "Субпродукты" }
+  // Данные для рыболовства (только уникальное - размерный ряд)
+  const fishingData = [
+    { name: "Щука", мелкая: "до 25 см", средняя: "от 25 см до 45 см", крупная: "от 45 см до 60 см" },
+    { name: "Язь", мелкая: "до 14 см", средняя: "от 14 см до 19 см", крупная: "более 19 см" },
+    { name: "Плотва", мелкая: "до 12 см", средняя: "от 12 см до 14 см", крупная: "более 14 см" },
+    { name: "Окунь", мелкая: "от 12 см", средняя: "от 12 см до 16 см", крупная: "более 16 см" },
+    { name: "Елец", мелкая: "от 12 см", средняя: "от 12 см до 16 см", крупная: "более 16 см" },
+    { name: "Ерш", мелкая: "от 12 см", средняя: "-", крупная: "-" },
+    { name: "Карась", мелкая: "до 14 см", средняя: "от 14 см до 20 см", крупная: "более 20 см" },
+    { name: "Мелочь (сорная)", мелкая: "до 14 см", средняя: "-", крупная: "-" }
   ]
 
-  const groupedProducts = products.reduce((acc, product) => {
-    if (!acc[product.category]) acc[product.category] = []
-    acc[product.category].push(product)
-    return acc
-  }, {})
+  // Данные для рыбоводства (только уникальное - особенности)
+  const aquacultureData = [
+    { name: "Форель", особенности: "Выращивается в садках в закрытых водоёмах. Нежное мясо с приятным розовым оттенком." },
+    { name: "Чир", особенности: "Выращивается в садках в закрытых водоёмах. Ценный вид сиговых рыб. Мясо белое, плотное, с высоким содержанием полезных жиров." },
+    { name: "Нельма", особенности: "Выращивается в садках в закрытых водоёмах. Деликатесный вид рыбы из семейства лососёвых. Мясо нежное, жирное, без мелких костей." },
+    { name: "Муксун", особенности: "Выращивается в садках в закрытых водоёмах. Северная рыба с нежным мясом и характерным свежим ароматом. Относится к ценным промысловым видам." },
+    { name: "Тугун", особенности: "Выращивается в садках в закрытых водоёмах. Маленькая рыбка из семейства сиговых, также известная как «сельдь сосновская». Имеет приятный огуречный запах." }
+  ]
+
+  const fishingColumns = ["Наименование", "Мелкая", "Средняя", "Крупная"]
 
   const toggleTheme = () => {
     setIsDarkTheme(!isDarkTheme)
     localStorage.setItem('theme', !isDarkTheme ? 'dark' : 'light')
   }
-
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
@@ -161,7 +129,6 @@ const slideMinHeight = isMobile ? 300 : 450;
     })
   }, [])
 
-  // Отслеживание активной секции при скролле
   useEffect(() => {
     const handleScroll = () => {
       const sections = ['about', 'gallery', 'products', 'documents', 'contacts']
@@ -294,23 +261,21 @@ const slideMinHeight = isMobile ? 300 : 450;
         }
       }
       
-// Светящиеся пятна (очень медленное движение, но видимые)
-for (let i = 0; i < 35; i++) {
-  // Используем синус с очень маленьким коэффициентом для плавного движения
-  const x = (Math.sin(i * 5.3 + time * 0.0006) * 0.4 + 0.5) * canvas.width
-  const y = canvas.height * (0.2 + Math.sin(i * 3.7 + time * 0.0004) * 0.15)
-  const radius = 50 + Math.sin(i * 2.1) * 25
-  const opacity = 0.06 + Math.sin(i * 2.5) * 0.03
-  
-  const spotGradient = ctx.createRadialGradient(x, y, 0, x, y, radius)
-  spotGradient.addColorStop(0, `rgba(100, 220, 150, ${opacity})`)
-  spotGradient.addColorStop(0.4, `rgba(70, 180, 120, ${opacity * 0.6})`)
-  spotGradient.addColorStop(0.7, `rgba(50, 140, 100, ${opacity * 0.3})`)
-  spotGradient.addColorStop(1, `rgba(40, 100, 70, 0)`)
-  
-  ctx.fillStyle = spotGradient
-  ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2)
-}
+      for (let i = 0; i < 35; i++) {
+        const x = (Math.sin(i * 5.3 + time * 0.0006) * 0.4 + 0.5) * canvas.width
+        const y = canvas.height * (0.2 + Math.sin(i * 3.7 + time * 0.0004) * 0.15)
+        const radius = 50 + Math.sin(i * 2.1) * 25
+        const opacity = 0.06 + Math.sin(i * 2.5) * 0.03
+        
+        const spotGradient = ctx.createRadialGradient(x, y, 0, x, y, radius)
+        spotGradient.addColorStop(0, `rgba(100, 220, 150, ${opacity})`)
+        spotGradient.addColorStop(0.4, `rgba(70, 180, 120, ${opacity * 0.6})`)
+        spotGradient.addColorStop(0.7, `rgba(50, 140, 100, ${opacity * 0.3})`)
+        spotGradient.addColorStop(1, `rgba(40, 100, 70, 0)`)
+        
+        ctx.fillStyle = spotGradient
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2)
+      }
       
       time++
       animationId = requestAnimationFrame(drawAurora)
@@ -329,26 +294,269 @@ for (let i = 0; i < 35; i++) {
 
   const sections = ['about', 'gallery', 'products', 'documents', 'contacts']
   const sectionNames = {
-    about: 'О нас',
+    about: 'Об обществе',
     gallery: 'Галерея',
     products: 'Продукция',
-    documents: 'Документация',
+    documents: 'Сотрудничество',
     contacts: 'Контакты'
   }
+
+   // Компонент табов с полноценными табами и полной заливкой фона
+  const TabContent = () => {
+    const [activeTabIndex, setActiveTabIndex] = useState(0)
+    
+    const tabs = [
+      { id: 'mission', title: 'Миссия', content: (
+        <div className="tab-content-inner" style={{ textAlign: 'left' }}>
+          <ul style={{ listStyle: 'none', paddingLeft: '0', lineHeight: '1.6', fontSize: getFontSize(13), margin: 0 }}>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              обеспечение экологически чистой и высококачественной продукцией, рыбой, выловленной в благополучных по описторхозу водоёмах
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              соблюдение и развитие традиций рыболовства — сохранение орудий и способов лова рыбы в условиях Арктики
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              сохранение традиционного образа жизни коренных малочисленных народов Севера Пуровского района
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              популяризация и поддержка жизни коренных малочисленных народов Севера
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              активное участие в социальных мероприятиях и программах Пуровского района
+            </li>
+          </ul>
+          <p style={{ marginTop: '16px', fontSize: getFontSize(12), fontStyle: 'italic', color: 'rgba(255,255,255,0.9)' }}>
+            Реализация миссии осуществляется при системной государственной поддержке в лице Департамента агропромышленного комплекса Ямало-Ненецкого автономного округа и Администрации Пуровского района.
+          </p>
+        </div>
+      ) },
+      { id: 'strategy', title: 'Стратегия', content: (
+        <div className="tab-content-inner" style={{ textAlign: 'left' }}>
+          <ul style={{ listStyle: 'none', paddingLeft: '0', lineHeight: '1.6', fontSize: getFontSize(13), margin: 0 }}>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              развитие производственных мощностей, модернизация оборудования, улучшение инфраструктуры производственных участков
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              расширение рынка сбыта
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              укрепление позиций на рынке
+            </li>
+            <li style={{ marginBottom: '10px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              социальная ответственность: улучшение уровня оплаты труда, создание комфортных условий труда и обеспечение безопасности сотрудников
+            </li>
+          </ul>
+          <p style={{ marginTop: '16px', fontSize: getFontSize(12), color: 'rgba(255,255,255,0.9)' }}>
+            Реализация стратегии, направленная на улучшение организации производственных процессов и условий труда, позволит Обществу сохранить в первую очередь традиционный образ жизни коренных малочисленных народов, профессию Рыбака и свои позиции в рыбодобывающей отрасли, продолжив целенаправленное развитие.
+          </p>
+        </div>
+      ) },
+      { id: 'geography', title: 'География', content: (
+        <div className="tab-content-inner">
+          <div style={{
+            width: '100%',
+            marginBottom: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            fontSize: getFontSize(14),
+            border: '1px dashed rgba(255,255,255,0.3)'
+          }}>
+            <img 
+              src={map}
+              alt="Карта участков"
+              loading="lazy"
+              style={{
+                width: '100%',
+                height: '100%',
+                // objectFit: 'contain'
+              }}
+            />
+          </div>
+          
+          <ul style={{ listStyle: 'none', paddingLeft: '0', fontSize: getFontSize(12), lineHeight: '1.6', margin: 0 }}>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Харампуровский» (база «Кар-Нат», «Хадутэй») (2) по дороге 87 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «озеро Часельское» (база) (3) часть дороги по дороге 110 км, далее только в зимний период по зимнику 55 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Военто» (рыбоводство) (4) по дороге 147 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Быстрика» (база, фактория) (5) часть дороги по дороге 200 км, после: в летний период по реке 70 км, в зимний период по зимнику 25 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Толька Пуровская» (база) (6) часть дороги по дороге 455 км, после: в летний период по реке 362 км, в зимний период по зимнику 230 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Толька Халясовэй» (база) (7) часть дороги по дороге 455 км, после: в летний период по реке 200 км, в зимний период по зимнику 120 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Ханымей» (база) (8) часть дороги по дороге 280 км.
+            </li>
+            <li style={{ marginBottom: '6px', paddingLeft: '18px', position: 'relative' }}>
+              <span style={{ position: 'absolute', left: '0' }}>◆</span>
+              От участка «Тарко-Сале» (1) – до участка «Сугмутско-Пякутинский» (база Пяку-то) (9) часть дороги по дороге 300 км.
+            </li>
+          </ul>
+        </div>
+      ) }
+    ]
+
+    // Цвета для фона табов в зависимости от темы
+    const bgColor = isDarkTheme ? '#1a3a2a' : '#1e3279'
+    const activeTabBg = isDarkTheme ? '#2a5a3a' : '#2a4a9e'
+    const textColor = '#ffffff'
+
+    return (
+      <div className="tabs-container" style={{ 
+        marginTop: '40px',
+        width: '100%',
+        backgroundColor: bgColor,
+        borderRadius: '16px',
+        overflow: 'hidden'
+      }}>
+        {/* Табы - как настоящие вкладки */}
+        <div className="tabs-header" style={{ 
+          display: 'flex',
+          borderBottom: `1px solid rgba(255,255,255,0.2)`,
+          backgroundColor: bgColor
+        }}>
+          {tabs.map((tab, index) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTabIndex(index)}
+              className={`tab-button ${activeTabIndex === index ? 'active' : ''}`}
+              style={{
+                flex: 1,
+                padding: '14px 20px',
+                background: activeTabIndex === index ? activeTabBg : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: activeTabIndex === index ? 600 : 500,
+                fontSize: isMobile ? getFontSize(14) : getFontSize(16),
+                color: textColor,
+                transition: 'all 0.2s ease',
+                borderBottom: activeTabIndex === index ? `2px solid ${isDarkTheme ? '#8bc34a' : '#d19250'}` : '2px solid transparent',
+                marginBottom: '-1px'
+              }}
+            >
+              {tab.title}
+            </button>
+          ))}
+        </div>
+        
+        {/* Контент таба */}
+        <div className="tabs-content" style={{ 
+          padding: '28px 32px',
+          minHeight: '350px',
+          transition: 'all 0.3s ease-in-out',
+          color: '#ffffff',
+          backgroundColor: bgColor
+        }}>
+          {tabs[activeTabIndex].content}
+        </div>
+      </div>
+    )
+  }
+
+   const buttonBgColor = isDarkTheme ? '#4a7c59' : '#1e3279'
+  const buttonHoverColor = isDarkTheme ? '#5a9c6e' : '#2a4a9e'
+
+  const AboutSection = () => (
+    <div className="about-wrapper" style={{ overflow: 'hidden' }}>
+      <div className="about-text" style={{ fontSize: getFontSize(isMobile ? 12 : 13), lineHeight: '1.5' }}>
+        {/* Логотип внутри текста, обтекаемый */}
+        <div className="about-image" style={{ 
+          float: 'right',
+          marginLeft: '25px',
+          marginBottom: '15px',
+          width: isMobile ? '140px' : '200px',
+          shapeOutside: `circle(50%)`,
+          shapeMargin: '15px'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '50%',
+            padding: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
+            width: isMobile ? '140px' : '200px',
+            height: isMobile ? '140px' : '200px'
+          }}>
+            <img 
+              src={logo}
+              alt="Логотип АО СХ община Пуровская"
+              loading="lazy"
+              style={{
+                width: '120%',
+                height: '120%',
+                objectFit: 'contain',
+                borderRadius: '50%'
+              }}
+            />
+          </div>
+        </div>
+        
+        <p><strong>Акционерное общество "Сельскохозяйственная община Пуровская"</strong> осуществляет деятельность на территории Пуровского района Ямало-Ненецкого автономного округа. Основные виды деятельности — рыболовство и рыбоводство.</p>
+        
+        <p>Образовано в 2005 году при поддержке Администрации Пуровского района. Учредителями Общества выступили департамент имущественных и земельных отношений Администрации Пуровского района и физические лица из числа коренных малочисленных народов Севера, ранее являвшихся членами национальных общин, зарегистрированных на территории района.</p>
+        
+        <p>Общество является социально значимым предприятием региона. Численность работников составляет более 200 человек, доля работников из числа коренных малочисленных народов Севера составляет не менее 70%, которые ведут кочевой и полукочевой образ жизни, проживают на удалённых труднодоступных территориях Пуровского района. В основном это лесные ненцы, селькупы и ханты.</p>
+        
+        <p>Профессиональный опыт руководителей Общества позволяет учитывать традиционный образ жизни работников, основанный на историческом опыте их предков в области природопользования, самобытную культуру и сохранение обычаев при организации производственных процессов предприятия, успешно обеспечивать выполнение планов по производству сельскохозяйственной продукции.</p>
+        
+        <p>АО "СХ община Пуровская" ежегодно добывает более 800 тонн рыбы, обеспечивая население Пуровского района качественной продукцией. Общество является надёжным партнёром.</p>
+      </div>
+    </div>
+  )
+
+  // // Цвета для кнопок в зависимости от темы
+  // const buttonBgColor = isDarkTheme ? '#4a7c59' : '#1e3279'
+  // const buttonHoverColor = isDarkTheme ? '#5a9c6e' : '#2a4a9e'
 
   return (
     <div className={`app ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       {isDarkTheme && <canvas id="auroraCanvas" className="aurora-canvas"></canvas>}
 
-      <header className="header">
-       {!isDarkTheme && !isMobile && <HeaderBorder />}
-  
 
+      {isMobile && (
+        <div className="font-control">
+          <button className="font-btn" onClick={decreaseFontSize} aria-label="Уменьшить шрифт">−</button>
+          <div className="font-size-indicator">{Math.round(fontSizeMultiplier * 100)}%</div>
+          <button className="font-btn" onClick={increaseFontSize} aria-label="Увеличить шрифт">+</button>
+        </div>
+      )}
+
+      <header className="header">
+          {!isDarkTheme && !isMobile && <HeaderBorder />}
+  
         <div className="container">
           <div className="header-content">
-            <h1 className="logo" style={{color: 'white'}}>Совхоз "Пуровский"</h1>
+            <h1 className="logo" style={{color: 'white', fontSize: isMobile ? getFontSize(18) : getFontSize(24)}}>Совхоз "Пуровский"</h1>
             
-            {/* Десктопная навигация */}
             <div className="desktop-nav">
               <nav className="nav">
                 {sections.map((section) => (
@@ -372,7 +580,6 @@ for (let i = 0; i < 35; i++) {
               </button>
             </div>
 
-            {/* Мобильные контролы: тогл + бургер */}
             <div className="mobile-controls">
               <button 
                 className={`theme-toggle mobile ${isDarkTheme ? 'dark' : 'light'}`} 
@@ -397,7 +604,6 @@ for (let i = 0; i < 35; i++) {
         </div>
       </header>
 
-      {/* Мобильное меню */}
       <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
         <div className="mobile-menu-content">
           {sections.map((section) => (
@@ -415,33 +621,53 @@ for (let i = 0; i < 35; i++) {
       <main>
         <section id="about" className="section">
           <div className="container">
-            <h2 className="section-title"></h2>
+            {/* <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Об обществе</h2> */}
             <AboutSection />
+            <TabContent />
           </div>
         </section>
 
-        {/* <section id="gallery" className="section">
+        <section id="gallery" className="section">
           <div className="container">
-            <h2 className="section-title">Галерея</h2>
+            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Галерея</h2>
             <div className="carousel-container">
               <button className="carousel-btn prev" onClick={prevImage}>❮</button>
               <div 
                 className="carousel-slide"
-                onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
-                onTouchEnd={onTouchEnd}
+                style={{
+                  flex: 1,
+                  textAlign: 'center',
+                  minHeight: isMobile ? '300px' : '450px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden'
+                }}
               >
-                {!imagesLoaded[currentImageIndex] ? (
-                  <div className="skeleton skeleton-image"></div>
-                ) : (
-                  <img 
-                    src={galleryImages[currentImageIndex].url} 
-                    alt={galleryImages[currentImageIndex].title}
-                    className="carousel-image"
-                    loading="lazy"
-                  />
-                )}
-                <p className="image-caption">{galleryImages[currentImageIndex].title}</p>
+                <div
+                  style={{
+                    width: isMobile ? '280px' : '500px',
+                    maxWidth: '700px',
+                    height: isMobile ? '200px' : '350px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderRadius: '16px'
+                  }}
+                >
+                  {!imagesLoaded[currentImageIndex] ? (
+                    <div className="skeleton skeleton-image"></div>
+                  ) : (
+                    <img 
+                      src={galleryImages[currentImageIndex].url} 
+                      alt={galleryImages[currentImageIndex].title}
+                      className="carousel-image"
+                      loading="lazy"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  )}
+                </div>
+                <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>{galleryImages[currentImageIndex].title}</p>
               </div>
               <button className="carousel-btn next" onClick={nextImage}>❯</button>
             </div>
@@ -455,309 +681,269 @@ for (let i = 0; i < 35; i++) {
               ))}
             </div>
           </div>
-        </section> */}
-<section 
-  id="gallery" 
-  className="section"
-  onMouseEnter={() => setHoveredSection('gallery')}
-  onMouseLeave={() => setHoveredSection(null)}
->
-  <div className="container">
-    <h2 className="section-title">Галерея</h2>
-    <div className="carousel-container">
-      <button className="carousel-btn prev" onClick={prevImage}>❮</button>
-      <div 
-        className="carousel-slide"
-        style={{
-          flex: 1,
-          textAlign: 'center',
-          cursor: 'pointer',
-          minHeight: '450px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden'
-        }}
-      >
-        <div
-          style={{
-            width: isMobile ? '300px' : '500px',
-            maxWidth: '700px',
-            height: '350px',
-            position: 'relative',
-            overflow: 'hidden',
-            borderRadius: '16px'
-          }}
-        >
-          <div
-            key={currentImageIndex}
-            style={{
-              width: '100%',
-              height: '100%',
-              background: isDarkTheme ? '#2a3a2f' : '#d0d8d0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '48px',
-              color: isDarkTheme ? '#8bc34a' : '#2a8ab0',
-              animation: 'slideIn 0.4s ease-out'
-            }}
-          >
-            
-          </div>
-        </div>
-        <p className="image-caption" style={{ marginTop: '16px' }}>Описание изображения {currentImageIndex + 1}</p>
-      </div>
-      <button className="carousel-btn next" onClick={nextImage}>❯</button>
-    </div>
-    <div className="carousel-dots">
-      {[...Array(5)].map((_, index) => (
-        <button
-          key={index}
-          className={`dot ${currentImageIndex === index ? 'active' : ''}`}
-          onClick={() => setCurrentImageIndex(index)}
-        />
-      ))}
-    </div>
-  </div>
-</section>
+        </section>
 
+        {/* РАЗДЕЛ ПРОДУКЦИИ */}
         <section id="products" className="section">
           <div className="container">
-            <h2 className="section-title">Продукция</h2>
-            
-            <div className="products-info-block" style={{
-              textAlign: 'center',
-              marginBottom: '30px',
-              padding: '16px 20px',
-              background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: '12px'
-            }}>
-              <p style={{ 
-                fontSize: '14px', 
-                lineHeight: 1.5, 
-                marginBottom: '10px',
-                color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
-              }}>
-                АО "Совхоз Пуровский" предлагает свежезамороженную продукцию и полуфабрикаты из оленины и рыбы.
-              </p>
-              <p style={{ 
-                fontSize: '13px', 
-                color: isDarkTheme ? '#b0d0b0' : '#1a6a8a'
-              }}>
-                По вопросам приобретения: 
-                <strong> +7(908)855-29-35</strong> (Пётр Константинович) или 
-                <strong> inbox@sovhozpur.ru</strong>
-              </p>
-            </div>
+            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Продукция</h2>
 
-            {Object.entries(groupedProducts).map(([category, items]) => (
-              <div key={category} style={{ marginBottom: '25px' }}>
-                <h3 style={{
-                  fontSize: '20px',
-                  fontFamily: 'Montserrat, sans-serif',
-                  marginBottom: '12px',
-                  color: isDarkTheme ? '#b0d0b0' : '##1e3279',
-                  borderLeft: `3px solid ${isDarkTheme ? '#7CB342' : '#2a8ab0'}`,
-                  paddingLeft: '12px'
-                }}>{category}</h3>
-                <div className="products-grid">
-                  {items.map((product, idx) => (
-                    <div key={idx} className="product-card" style={{
-                      background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
-                      backdropFilter: 'blur(4px)',
-                      borderRadius: '8px',
-                      padding: '8px 12px',
-                      transition: 'all 0.2s ease',
-                      border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(42, 138, 176, 0.25)'}`,
-                      fontSize: '13px',
-                      color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
-                    }}>
-                      {product.name}
-                    </div>
-                  ))}
-                </div>
+            <button
+              onClick={() => setIsFishingOpen(!isFishingOpen)}
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                background: buttonBgColor,
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: isMobile ? getFontSize(15) : getFontSize(17),
+                fontWeight: 600,
+                marginBottom: '12px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = buttonHoverColor}
+              onMouseLeave={(e) => e.currentTarget.style.background = buttonBgColor}
+            >
+              Рыболовство
+              <span style={{
+                transform: isFishingOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+                fontSize: getFontSize(18)
+              }}>▼</span>
+            </button>
+
+            {isFishingOpen && (
+              <div style={{
+                marginBottom: '24px',
+                overflowX: 'auto',
+                animation: 'slideDown 0.3s ease-out',
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%'
+              }}>
+                <table className="products-table">
+                  <thead>
+                    <tr>
+                      {fishingColumns.map((col, idx) => (
+                        <th key={idx}>{col}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fishingData.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>{item.name}</td>
+                        <td>{item.мелкая}</td>
+                        <td>{item.средняя}</td>
+                        <td>{item.крупная}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            ))}
+            )}
 
-            <div style={{
-              textAlign: 'center',
-              marginTop: '20px',
-              padding: '12px',
-              background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.8)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: '10px'
-            }}>
-              <p style={{ 
-                fontSize: '12px',
-                color: isDarkTheme ? '#b0d0b0' : '#3a6a7a'
+            {isFishingOpen && (
+              <div className="footnote" style={{ textAlign: 'center' }}>
+                * Общая информация для всей продукции рыболовства:<br />
+                Сезон вылова: зимнего вылова (кроме карася — лето/осень вылова в глазировке).<br />
+                Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
+              </div>
+            )}
+
+            <button
+              onClick={() => setIsAquacultureOpen(!isAquacultureOpen)}
+              style={{
+                width: '100%',
+                padding: '14px 20px',
+                background: buttonBgColor,
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: isMobile ? getFontSize(15) : getFontSize(17),
+                fontWeight: 600,
+                marginBottom: '12px',
+                marginTop: '12px',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = buttonHoverColor}
+              onMouseLeave={(e) => e.currentTarget.style.background = buttonBgColor}
+            >
+              Рыбоводство
+              <span style={{
+                transform: isAquacultureOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+                fontSize: getFontSize(18)
+              }}>▼</span>
+            </button>
+
+            {isAquacultureOpen && (
+              <div style={{
+                marginBottom: '24px',
+                overflowX: 'auto',
+                animation: 'slideDown 0.3s ease-out',
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%'
               }}>
-                На всю продукцию имеются сертификаты качества
+                <table className="products-table">
+                  <thead>
+                    <tr>
+                      <th>Наименование</th>
+                      <th>Особенности</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {aquacultureData.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>{item.name}</td>
+                        <td>{item.особенности}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {isAquacultureOpen && (
+              <div className="footnote" style={{ textAlign: 'center' }}>
+                * Общая информация для всей продукции рыбоводства:<br />
+                Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
+              </div>
+            )}
+
+             <div style={{
+              background: isDarkTheme ? 'rgba(8, 18, 12, 0.6)' : 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '16px',
+              padding: '14px',
+              marginTop: '16px',
+              textAlign: 'center',
+              color: isDarkTheme ? '#d0d8d0' : '#1a2a3a'
+            }}>
+              <p style={{ fontSize: getFontSize(11), margin: '0 0 8px 0' }}>
+                Мы соблюдаем санитарные правила и нормы в полном объёме: регулярное проведение ветеринарно-санитарных экспертиз, обеспечиваем хранение продукции при температуре не менее -18°C.
+              </p>
+              <p style={{ fontSize: getFontSize(11), margin: '0' }}>
+                Предоставляем ветеринарные документы. Наша продукция соответствует ГОСТ 32366-2013
               </p>
             </div>
           </div>
         </section>
 
-       <section 
-  id="documents" 
-  className="section"
-  onMouseEnter={() => setHoveredSection('documents')}
-  onMouseLeave={() => setHoveredSection(null)}
->
-  <div className="container">
-    <h2 className="section-title">Документы</h2>
-    <div className="documents-grid">
-      {[
-        { name: "Документ 1", link: "#" },
-        { name: "Документ 2", link: "#" },
-        { name: "Документ 3", link: "#" },
-        { name: "Документ 4", link: "#" },
-        { name: "Документ 5", link: "#" },
-        { name: "Документ 6", link: "#" }
-      ].map((doc, index) => (
-        <div key={index} className="document-card">
-          <h3 className="document-name">{doc.name}</h3>
-          <a href={doc.link} className="download-btn" download>Скачать</a>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
+        <section id="documents" className="section">
+          <div className="container">
+            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Документы</h2>
+            <div className="documents-grid" style={{ gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)' }}>
+              {[
+                { name: "Устав предприятия", link: "#" },
+                { name: "Свидетельство ОГРН", link: "#" },
+                { name: "Лицензия на рыболовство", link: "#" },
+                { name: "Сертификаты качества", link: "#" },
+                { name: "Отчётность 2024", link: "#" },
+                { name: "Коллективный договор", link: "#" }
+              ].map((doc, index) => (
+                <div key={index} className="document-card">
+                  <h3 className="document-name" style={{ fontSize: getFontSize(14) }}>{doc.name}</h3>
+                  <a href={doc.link} className="download-btn" download style={{ fontSize: getFontSize(11) }}>Скачать</a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       
-<section 
-  id="contacts" 
-  className="section"
-  onMouseEnter={() => setHoveredSection('contacts')}
-  onMouseLeave={() => setHoveredSection(null)}
->
-  <div className="container">
-    <h2 className="section-title">Контакты</h2>
-    
-    <div className="contacts-grid-wrapper" style={{
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '2rem',
-      background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
-      backdropFilter: 'blur(8px)',
-      borderRadius: '24px',
-      padding: '2rem',
-      border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : 'rgba(100, 180, 200, 0.3)'}`
-    }}>
-      
-      {/* Левая колонка - контакты */}
-      <div className="contacts-info-block">
-        <div style={{ marginBottom: '1.5rem' }}>
-          <strong style={{ 
-            fontSize: '16px',
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 600,
-            marginBottom: '8px',
-            display: 'block',
-            color: isDarkTheme ? '#b0d0b0' : '##1e3279'
-          }}>Телефон</strong>
-          <p style={{ marginTop: '8px' }}>
-            <a href="tel:+73499512345" style={{ 
-              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
-              textDecoration: 'none',
-              transition: 'color 0.2s'
-            }}>+7 (34999) 5-12-34</a>
-          </p>
-          <p>
-            <a href="tel:+73499516789" style={{ 
-              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
-              textDecoration: 'none',
-              transition: 'color 0.2s'
-            }}>+7 (34999) 5-67-89</a>
-          </p>
-        </div>
-        
-        <div style={{ marginBottom: '1.5rem' }}>
-          <strong style={{ 
-            fontSize: '16px',
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 600,
-            marginBottom: '8px',
-            display: 'block',
-            color: isDarkTheme ? '#b0d0b0' : '##1e3279'
-          }}>E-mail</strong>
-          <p style={{ marginTop: '8px' }}>
-            <a href="mailto:info@purovsky-sovhoz.ru" style={{ 
-              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
-              textDecoration: 'none',
-              transition: 'color 0.2s'
-            }}>info@purovsky-sovhoz.ru</a>
-          </p>
-          <p>
-            <a href="mailto:zakaz@sovhozpur.ru" style={{ 
-              color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', 
-              textDecoration: 'none',
-              transition: 'color 0.2s'
-            }}>zakaz@sovhozpur.ru</a>
-          </p>
-        </div>
-        
-        <div>
-          <strong style={{ 
-            fontSize: '16px',
-            fontFamily: 'Montserrat, sans-serif',
-            fontWeight: 600,
-            marginBottom: '8px',
-            display: 'block',
-            color: isDarkTheme ? '#b0d0b0' : '##1e3279'
-          }}>Адрес</strong>
-          <p style={{ 
-            marginTop: '8px',
-            color: isDarkTheme ? '#d0d8d0' : '#2a3a4a',
-            lineHeight: 1.5
-          }}>
-            Ямало-Ненецкий АО, Пуровский район,<br />
-            пос. Пуровск, ул. Совхозная, 1
-          </p>
-        </div>
-      </div>
-      
-      {/* Правая колонка - Яндекс.Карта */}
-      <div className="contacts-map-block">
-        <iframe 
-          src="https://yandex.ru/map-widget/v1/?ll=77.6667,64.9167&z=12&pt=77.6667,64.9167,pm2rdl"
-          width="100%" 
-          height="250" 
-          style={{ border: 0, borderRadius: '16px' }}
-          allowFullScreen
-          loading="lazy"
-          title="Карта совхоза Пуровский"
-        />
-        <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-          <a 
-            href="https://yandex.ru/maps/?text=Пуровск+Совхозная+1" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ 
-              color: isDarkTheme ? '#8bc34a' : '#2a8ab0', 
-              fontSize: '13px', 
-              textDecoration: 'none',
-              transition: 'color 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.color = isDarkTheme ? '#a0e0a0' : '#1a6a8a'}
-            onMouseLeave={(e) => e.target.style.color = isDarkTheme ? '#8bc34a' : '#2a8ab0'}
-          >
-            Открыть в Яндекс.Картах →
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+        <section id="contacts" className="section">
+          <div className="container">
+            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Контакты</h2>
+            
+            <div className="contacts-grid-wrapper" style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: '1.5rem',
+              background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '24px',
+              padding: isMobile ? '1.5rem' : '2rem',
+              border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : '#d19250'}`
+            }}>
+              
+              <div className="contacts-info-block">
+                <div style={{ marginBottom: '1rem' }}>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон</strong>
+                  <p style={{ marginTop: '4px' }}><a href="tel:+73499512345" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>+7 (34999) 5-12-34</a></p>
+                  <p><a href="tel:+73499516789" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>+7 (34999) 5-67-89</a></p>
+                </div>
+                
+                <div style={{ marginBottom: '1rem' }}>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>E-mail</strong>
+                  <p style={{ marginTop: '4px' }}><a href="mailto:info@sovhozpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>info@sovhozpur.ru</a></p>
+                  <p><a href="mailto:zakaz@sovhozpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>zakaz@sovhozpur.ru</a></p>
+                </div>
+                
+                <div>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Адрес</strong>
+                  <p style={{ marginTop: '4px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', lineHeight: 1.5, fontSize: getFontSize(14) }}>
+                    Ямало-Ненецкий АО, Пуровский район,<br />
+                    г. Тарко-Сале, ул. Совхозная, 1
+                  </p>
+                </div>
+              </div>
+              
+              <div className="contacts-map-block">
+                <iframe 
+                  src="https://yandex.ru/map-widget/v1/?ll=77.6667,64.9167&z=12&pt=77.6667,64.9167,pm2rdl"
+                  width="100%" 
+                  height="220" 
+                  style={{ border: 0, borderRadius: '16px' }}
+                  allowFullScreen
+                  loading="lazy"
+                  title="Карта совхоза Пуровский"
+                />
+                <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+                  <a 
+                    href="https://yandex.ru/maps/?text=Тарко-Сале+Совхозная+1" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ color: isDarkTheme ? '#8bc34a' : '#1e3279', fontSize: getFontSize(12), textDecoration: 'none' }}
+                  >
+                    Открыть в Яндекс.Картах →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer className="footer">
         <div className="container">
-          <p>© 2026 Совхоз "Пуровский". Все права защищены.</p>
+          <p style={{ fontSize: getFontSize(12) }}>© 2026 Совхоз "Пуровский". Все права защищены.</p>
         </div>
       </footer>
+
+      <style>{`
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }
