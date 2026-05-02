@@ -14,6 +14,7 @@ import fisher from './assets/fisher.jpg'
 import tarko from './assets/tarko.jpg'
 import winter from './assets/winter.jpg'
 import storage from './assets/storage.jpg'
+import NewsSection from './components/NewsSection'
 
 const fontLink = document.createElement('link')
 fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Montserrat:wght@400;500;600;700&display=swap'
@@ -45,17 +46,39 @@ function App() {
 
   const isMobile = windowWidth <= 768;
 
-  const increaseFontSize = () => {
-    if (fontSizeMultiplier < 1.4) {
-      setFontSizeMultiplier(prev => prev + 0.1)
-    }
-  }
+  const [showFontControls, setShowFontControls] = useState(true)
+const hideTimeoutRef = useRef(null)
 
-  const decreaseFontSize = () => {
-    if (fontSizeMultiplier > 0.8) {
-      setFontSizeMultiplier(prev => prev - 0.1)
-    }
+// Измените функции увеличения/уменьшения шрифта
+const increaseFontSize = () => {
+  if (fontSizeMultiplier < 1.4) {
+    setFontSizeMultiplier(prev => prev + 0.1)
   }
+  setShowFontControls(true)
+  if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+  hideTimeoutRef.current = setTimeout(() => setShowFontControls(false), 2000)
+}
+
+const decreaseFontSize = () => {
+  if (fontSizeMultiplier > 0.8) {
+    setFontSizeMultiplier(prev => prev - 0.1)
+  }
+  setShowFontControls(true)
+  if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+  hideTimeoutRef.current = setTimeout(() => setShowFontControls(false), 2000)
+}
+
+  // const increaseFontSize = () => {
+  //   if (fontSizeMultiplier < 1.4) {
+  //     setFontSizeMultiplier(prev => prev + 0.1)
+  //   }
+  // }
+
+  // const decreaseFontSize = () => {
+  //   if (fontSizeMultiplier > 0.8) {
+  //     setFontSizeMultiplier(prev => prev - 0.1)
+  //   }
+  // }
 
   const getFontSize = (baseSize) => {
     return `${baseSize * fontSizeMultiplier}px`
@@ -654,13 +677,15 @@ const galleryImages = [
         </div>
       )}
 
-      {isMobile && (
-        <div className="font-control">
-          <button className="font-btn" onClick={decreaseFontSize} aria-label="Уменьшить шрифт">−</button>
-          <div className="font-size-indicator">{Math.round(fontSizeMultiplier * 100)}%</div>
-          <button className="font-btn" onClick={increaseFontSize} aria-label="Увеличить шрифт">+</button>
-        </div>
-      )}
+{isMobile && (
+  <div 
+    className={`font-control-vertical ${showFontControls ? 'font-control-visible' : ''}`}
+    style={{ opacity: showFontControls ? 1 : 0.4 }}
+  >
+    <button className="font-btn-vertical" onClick={increaseFontSize} aria-label="Увеличить шрифт">+</button>
+    <button className="font-btn-vertical" onClick={decreaseFontSize} aria-label="Уменьшить шрифт">−</button>
+  </div>
+)}
 
       <header className="header">
         {!isDarkTheme && !isMobile && <HeaderBorder />}
@@ -738,61 +763,127 @@ const galleryImages = [
           </div>
         </section>
 
-        <section id="gallery" className="section">
-          <div className="container">
-            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Галерея</h2>
-            <div className="carousel-container">
-              <button className="carousel-btn prev" onClick={prevImage}>❮</button>
-              <div 
-                className="carousel-slide"
-                style={{
-                  flex: 1,
-                  textAlign: 'center',
-                  minHeight: isMobile ? '300px' : '450px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  overflow: 'hidden'
-                }}
-              >
-                <div
-                  style={{
-                    width: isMobile ? '280px' : '500px',
-                    maxWidth: '700px',
-                    height: isMobile ? '200px' : '350px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    borderRadius: '16px'
-                  }}
-                >
-                  {!imagesLoaded[currentImageIndex] ? (
-                    <div className="skeleton skeleton-image"></div>
-                  ) : (
-                    <img 
-                      src={galleryImages[currentImageIndex].url} 
-                      alt={galleryImages[currentImageIndex].title}
-                      className="carousel-image"
-                      loading="lazy"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  )}
-                </div>
-                {/* <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>{galleryImages[currentImageIndex].title}</p> */}
-              </div>
-              <button className="carousel-btn next" onClick={nextImage}>❯</button>
-            </div>
-            <div className="carousel-dots">
-              {galleryImages.map((_, index) => (
-                <button
-                  key={index}
-                  className={`dot ${currentImageIndex === index ? 'active' : ''}`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </div>
+<section id="gallery" className="section">
+  <div className="container">
+    <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Галерея</h2>
+    <div className="carousel-container">
+      {!isMobile && (
+        <button className="carousel-btn prev" onClick={prevImage}>❮</button>
+      )}
+      <div 
+        className="carousel-slide"
+        style={{
+          flex: 1,
+          textAlign: 'center',
+          minHeight: isMobile ? '300px' : '450px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          position: 'relative'
+        }}
+      >
+        <div
+          style={{
+            width: isMobile ? '100%' : '500px',
+            maxWidth: '100%',
+            height: isMobile ? '250px' : '350px',
+            position: 'relative',
+            overflow: 'hidden',
+            borderRadius: '16px',
+            padding: isMobile ? '0 10px' : '0'
+          }}
+        >
+          {!imagesLoaded[currentImageIndex] ? (
+            <div className="skeleton skeleton-image"></div>
+          ) : (
+            <img 
+              src={galleryImages[currentImageIndex].url} 
+              alt={galleryImages[currentImageIndex].title}
+              className="carousel-image"
+              loading="lazy"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )}
+        </div>
+        {!isMobile && (
+          <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>
+            {galleryImages[currentImageIndex].title}
+          </p>
+        )}
+        
+        {/* Мобильные кнопки на самом изображении */}
+        {isMobile && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            transform: 'translateY(-50%)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '0 10px',
+            pointerEvents: 'none'
+          }}>
+            <button 
+              onClick={prevImage}
+              style={{
+                pointerEvents: 'auto',
+                background: 'rgba(0,0,0,0.5)',
+                border: 'none',
+                color: 'white',
+                fontSize: '24px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ❮
+            </button>
+            <button 
+              onClick={nextImage}
+              style={{
+                pointerEvents: 'auto',
+                background: 'rgba(0,0,0,0.5)',
+                border: 'none',
+                color: 'white',
+                fontSize: '24px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ❯
+            </button>
           </div>
-        </section>
+        )}
+      </div>
+      {!isMobile && (
+        <button className="carousel-btn next" onClick={nextImage}>❯</button>
+      )}
+    </div>
+    {!isMobile && (
+      <div className="carousel-dots">
+        {galleryImages.map((_, index) => (
+          <button
+            key={index}
+            className={`dot ${currentImageIndex === index ? 'active' : ''}`}
+            onClick={() => setCurrentImageIndex(index)}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+</section>
 
         <section id="products" className="section">
           <div className="container">
@@ -1116,68 +1207,89 @@ const galleryImages = [
             </div>
           </div>
         </section>
+
+        {/* Секция новостей */}
+<NewsSection isDarkTheme={isDarkTheme} getFontSize={getFontSize} isMobile={isMobile} />
       
-        <section id="contacts" className="section">
-          <div className="container">
-            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Контакты</h2>
-            
-            <div className="contacts-grid-wrapper" style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-              gap: '1.5rem',
-              background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
-              backdropFilter: 'blur(8px)',
-              borderRadius: '24px',
-              padding: isMobile ? '1.5rem' : '2rem',
-              border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : '#d19250'}`
-            }}>
-              
-              <div className="contacts-info-block">
-                <div style={{ marginBottom: '1rem' }}>
-                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон</strong>
-                  <p style={{ marginTop: '4px' }}><a href="tel:+73499512345" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>+7 (34999) 5-12-34</a></p>
-                  <p><a href="tel:+73499516789" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>+7 (34999) 5-67-89</a></p>
-                </div>
-                
-                <div style={{ marginBottom: '1rem' }}>
-                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>E-mail</strong>
-                  <p style={{ marginTop: '4px' }}><a href="mailto:info@sovhozpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>info@sovhozpur.ru</a></p>
-                  <p><a href="mailto:zakaz@sovhozpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>zakaz@sovhozpur.ru</a></p>
-                </div>
-                
-                <div>
-                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Адрес</strong>
-                  <p style={{ marginTop: '4px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', lineHeight: 1.5, fontSize: getFontSize(14) }}>
-                    Ямало-Ненецкий АО, Пуровский район,<br />
-                    г. Тарко-Сале, ул. Совхозная, 1
-                  </p>
-                </div>
-              </div>
-              
-              <div className="contacts-map-block">
-                <iframe 
-                  src="https://yandex.ru/map-widget/v1/?ll=77.6667,64.9167&z=12&pt=77.6667,64.9167,pm2rdl"
-                  width="100%" 
-                  height="220" 
-                  style={{ border: 0, borderRadius: '16px' }}
-                  allowFullScreen
-                  loading="lazy"
-                  title="Карта совхоза Пуровский"
-                />
-                <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
-                  <a 
-                    href="https://yandex.ru/maps/?text=Тарко-Сале+Совхозная+1" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{ color: isDarkTheme ? '#8bc34a' : '#1e3279', fontSize: getFontSize(12), textDecoration: 'none' }}
-                  >
-                    Открыть в Яндекс.Картах →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+   <section id="contacts" className="section">
+  <div className="container">
+    <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Контакты</h2>
+    
+    <div className="contacts-grid-wrapper" style={{
+      display: 'grid',
+      gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+      gap: '1.5rem',
+      background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
+      backdropFilter: 'blur(8px)',
+      borderRadius: '24px',
+      padding: isMobile ? '1.5rem' : '2rem',
+      border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : '#d19250'}`
+    }}>
+      
+      <div className="contacts-info-block">
+        <div style={{ marginBottom: '1.2rem' }}>
+          <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон</strong>
+          <p style={{ marginTop: '4px' }}>
+            <a href="tel:+73499728066" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
+              8 (34997) 2-80-66
+            </a>
+          </p>
+        </div>
+        
+        <div style={{ marginBottom: '1.2rem' }}>
+          <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>E-mail</strong>
+          <p style={{ marginTop: '4px' }}>
+            <a href="mailto:zakupki@obpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
+              zakupki@obpur.ru
+            </a>
+          </p>
+        </div>
+        
+        <div>
+          <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Адрес</strong>
+          <p style={{ marginTop: '4px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', lineHeight: 1.5, fontSize: getFontSize(14) }}>
+            Ямало-Ненецкий автономный округ,<br />
+            г. Тарко-Сале, микрорайон Советский, д. 6А
+          </p>
+        </div>
+        
+        {/* Дополнительная информация */}
+        <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.2)' : 'rgba(0,0,0,0.1)'}` }}>
+          <p style={{ fontSize: getFontSize(12), color: isDarkTheme ? '#b0d0b0' : '#4a6a7a' }}>
+            <strong>По вопросам приобретения рыбной продукции:</strong>
+          </p>
+          <p style={{ fontSize: getFontSize(12), marginTop: '5px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a' }}>
+            Девятериков Александр Николаевич — +7-951-986-60-36
+          </p>
+        </div>
+      </div>
+      
+      <div className="contacts-map-block">
+        <iframe 
+          src="https://yandex.ru/map-widget/v1/?ll=77.4167,64.9167&z=15&pt=77.4167,64.9167,pm2rdl&what=Тарко-Сале, микрорайон Советский, 6А"
+          width="100%" 
+          height="250" 
+          style={{ border: 0, borderRadius: '16px' }}
+          allowFullScreen
+          loading="lazy"
+          title="Карта Совхоз Пуровский - г. Тарко-Сале, микрорайон Советский, д. 6А"
+        />
+        <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+          <a 
+            href="https://yandex.ru/maps/?text=Тарко-Сале+микрорайон+Советский+6А"
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: isDarkTheme ? '#8bc34a' : '#1e3279', fontSize: getFontSize(12), textDecoration: 'none' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = isDarkTheme ? '#a0e0a0' : '#2a4a9e'}
+            onMouseLeave={(e) => e.currentTarget.style.color = isDarkTheme ? '#8bc34a' : '#1e3279'}
+          >
+            Открыть в Яндекс.Картах →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
       </main>
 
       <footer className="footer">
