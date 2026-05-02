@@ -1,8 +1,19 @@
-// src/App.jsx
 import './App.css'
 import logo from './assets/logo.png'
-import map from './assets/map.png'
-import HeaderBorder from './components/HeaderBorder';
+import map from './assets/map_company.png'
+import companyCard from './assets/company_card.pdf'
+import HeaderBorder from './components/HeaderBorder'
+import dance from './assets/dance.jpg'
+import avrora from './assets/avrora.jpg'
+import berry from './assets/berry.jpg'
+import fish from './assets/fish.jpg'
+import fish1 from './assets/fish1.jpg'
+import fish2 from './assets/fish2.jpg'
+import fish3 from './assets/fish3.jpg'
+import fisher from './assets/fisher.jpg'
+import tarko from './assets/tarko.jpg'
+import winter from './assets/winter.jpg'
+import storage from './assets/storage.jpg'
 
 const fontLink = document.createElement('link')
 fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Montserrat:wght@400;500;600;700&display=swap'
@@ -24,6 +35,7 @@ function App() {
   const [isFishingOpen, setIsFishingOpen] = useState(false)
   const [isAquacultureOpen, setIsAquacultureOpen] = useState(false)
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1)
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -49,30 +61,53 @@ function App() {
     return `${baseSize * fontSizeMultiplier}px`
   }
 
-  const galleryImages = [
-    {
-      url: "https://sovhozpur.ru/wp-content/uploads/2021/09/IMG_20210902_143258-scaled.jpg",
-      title: "Панорама совхоза"
-    },
-    {
-      url: "https://sovhozpur.ru/wp-content/uploads/2021/09/IMG_20210902_143426-scaled.jpg",
-      title: "Животноводческий комплекс"
-    },
-    {
-      url: "https://sovhozpur.ru/wp-content/uploads/2021/09/IMG_20210902_143609-scaled.jpg",
-      title: "Трудовая деятельность"
-    },
-    {
-      url: "https://sovhozpur.ru/wp-content/uploads/2021/09/IMG_20210902_143725-scaled.jpg",
-      title: "Техника совхоза"
-    },
-    {
-      url: "https://sovhozpur.ru/wp-content/uploads/2021/09/IMG_20210902_143859-scaled.jpg",
-      title: "Сотрудники"
-    }
-  ]
+const galleryImages = [
+  {
+    url: dance,
+    title: "Танцы"
+  },
+  {
+    url: avrora,
+    title: "Аврора (северное сияние)"
+  },
+  {
+    url: berry,
+    title: "Ягоды северные"
+  },
+  {
+    url: fish,
+    title: "Рыболовство"
+  },
+  {
+    url: fish1,
+    title: "Рыболовство"
+  },
+  {
+    url: fish2,
+    title: "Рыболовство"
+  },
+  {
+    url: fish3,
+    title: "Рыболовство"
+  },
+  {
+    url: fisher,
+    title: "Рыбаки Пуровского района"
+  },
+  {
+    url: tarko,
+    title: "Тарко-Сале"
+  },
+  {
+    url: winter,
+    title: "Зима"
+  },
+  {
+    url: storage,
+    title: "Склад хранения продукции"
+  }
+]
 
-  // Данные для рыболовства (только уникальное - размерный ряд)
   const fishingData = [
     { name: "Щука", мелкая: "до 25 см", средняя: "от 25 см до 45 см", крупная: "от 45 см до 60 см" },
     { name: "Язь", мелкая: "до 14 см", средняя: "от 14 см до 19 см", крупная: "более 19 см" },
@@ -84,7 +119,6 @@ function App() {
     { name: "Мелочь (сорная)", мелкая: "до 14 см", средняя: "-", крупная: "-" }
   ]
 
-  // Данные для рыбоводства (только уникальное - особенности)
   const aquacultureData = [
     { name: "Форель", особенности: "Выращивается в садках в закрытых водоёмах. Нежное мясо с приятным розовым оттенком." },
     { name: "Чир", особенности: "Выращивается в садках в закрытых водоёмах. Ценный вид сиговых рыб. Мясо белое, плотное, с высоким содержанием полезных жиров." },
@@ -191,7 +225,6 @@ function App() {
     }
   }
 
-  // Эффект северного сияния
   useEffect(() => {
     if (!isDarkTheme) return
     
@@ -301,7 +334,7 @@ function App() {
     contacts: 'Контакты'
   }
 
-   // Компонент табов с полноценными табами и полной заливкой фона
+  // // Компонент табов с полноценными табами и полной заливкой фона
   const TabContent = () => {
     const [activeTabIndex, setActiveTabIndex] = useState(0)
     
@@ -362,26 +395,41 @@ function App() {
       ) },
       { id: 'geography', title: 'География', content: (
         <div className="tab-content-inner">
-          <div style={{
-            width: '100%',
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#ffffff',
-            fontSize: getFontSize(14),
-            border: '1px dashed rgba(255,255,255,0.3)'
-          }}>
+          <div 
+            style={{
+              width: '100%',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+            onClick={() => setIsMapFullscreen(true)}
+          >
             <img 
               src={map}
-              alt="Карта участков"
+              alt="Карта участков Пуровского района"
               loading="lazy"
               style={{
                 width: '100%',
-                height: '100%',
-                // objectFit: 'contain'
+                height: 'auto',
+                borderRadius: '8px',
+                border: '1px solid rgba(255,255,255,0.2)'
               }}
             />
+            <div style={{
+              position: 'absolute',
+              bottom: '10px',
+              right: '10px',
+              background: 'rgba(0,0,0,0.6)',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: getFontSize(10),
+              color: '#ffffff'
+            }}>
+              Нажмите для увеличения
+            </div>
           </div>
           
           <ul style={{ listStyle: 'none', paddingLeft: '0', fontSize: getFontSize(12), lineHeight: '1.6', margin: 0 }}>
@@ -422,7 +470,6 @@ function App() {
       ) }
     ]
 
-    // Цвета для фона табов в зависимости от темы
     const bgColor = isDarkTheme ? '#1a3a2a' : '#1e3279'
     const activeTabBg = isDarkTheme ? '#2a5a3a' : '#2a4a9e'
     const textColor = '#ffffff'
@@ -435,7 +482,6 @@ function App() {
         borderRadius: '16px',
         overflow: 'hidden'
       }}>
-        {/* Табы - как настоящие вкладки */}
         <div className="tabs-header" style={{ 
           display: 'flex',
           borderBottom: `1px solid rgba(255,255,255,0.2)`,
@@ -445,7 +491,6 @@ function App() {
             <button
               key={tab.id}
               onClick={() => setActiveTabIndex(index)}
-              className={`tab-button ${activeTabIndex === index ? 'active' : ''}`}
               style={{
                 flex: 1,
                 padding: '14px 20px',
@@ -466,7 +511,6 @@ function App() {
           ))}
         </div>
         
-        {/* Контент таба */}
         <div className="tabs-content" style={{ 
           padding: '28px 32px',
           minHeight: '350px',
@@ -480,13 +524,12 @@ function App() {
     )
   }
 
-   const buttonBgColor = isDarkTheme ? '#4a7c59' : '#1e3279'
+  const buttonBgColor = isDarkTheme ? '#4a7c59' : '#1e3279'
   const buttonHoverColor = isDarkTheme ? '#5a9c6e' : '#2a4a9e'
 
   const AboutSection = () => (
     <div className="about-wrapper" style={{ overflow: 'hidden' }}>
       <div className="about-text" style={{ fontSize: getFontSize(isMobile ? 12 : 13), lineHeight: '1.5' }}>
-        {/* Логотип внутри текста, обтекаемый */}
         <div className="about-image" style={{ 
           float: 'right',
           marginLeft: '25px',
@@ -511,8 +554,8 @@ function App() {
               alt="Логотип АО СХ община Пуровская"
               loading="lazy"
               style={{
-                width: '120%',
-                height: '120%',
+                width: '100%',
+                height: '100%',
                 objectFit: 'contain',
                 borderRadius: '50%'
               }}
@@ -533,14 +576,83 @@ function App() {
     </div>
   )
 
-  // // Цвета для кнопок в зависимости от темы
-  // const buttonBgColor = isDarkTheme ? '#4a7c59' : '#1e3279'
-  // const buttonHoverColor = isDarkTheme ? '#5a9c6e' : '#2a4a9e'
-
   return (
     <div className={`app ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       {isDarkTheme && <canvas id="auroraCanvas" className="aurora-canvas"></canvas>}
 
+      {/* Fullscreen Map Modal */}
+      {isMapFullscreen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.95)',
+          zIndex: 2000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(8px)'
+        }}>
+          <button
+            onClick={() => setIsMapFullscreen(false)}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.2)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+              fontSize: '24px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 2001
+            }}
+          >
+            ✕
+          </button>
+          
+          <div style={{
+            width: '90%',
+            height: '85%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <img 
+              src={map}
+              alt="Карта участков Пуровского района"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                borderRadius: '8px'
+              }}
+            />
+          </div>
+          
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            color: 'rgba(255,255,255,0.6)',
+            fontSize: getFontSize(12),
+            background: 'rgba(0,0,0,0.5)',
+            padding: '6px 12px',
+            borderRadius: '20px'
+          }}>
+            Карта участков Пуровского района
+          </div>
+        </div>
+      )}
 
       {isMobile && (
         <div className="font-control">
@@ -551,7 +663,7 @@ function App() {
       )}
 
       <header className="header">
-          {!isDarkTheme && !isMobile && <HeaderBorder />}
+        {!isDarkTheme && !isMobile && <HeaderBorder />}
   
         <div className="container">
           <div className="header-content">
@@ -621,7 +733,6 @@ function App() {
       <main>
         <section id="about" className="section">
           <div className="container">
-            {/* <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Об обществе</h2> */}
             <AboutSection />
             <TabContent />
           </div>
@@ -667,7 +778,7 @@ function App() {
                     />
                   )}
                 </div>
-                <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>{galleryImages[currentImageIndex].title}</p>
+                {/* <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>{galleryImages[currentImageIndex].title}</p> */}
               </div>
               <button className="carousel-btn next" onClick={nextImage}>❯</button>
             </div>
@@ -683,7 +794,6 @@ function App() {
           </div>
         </section>
 
-        {/* РАЗДЕЛ ПРОДУКЦИИ */}
         <section id="products" className="section">
           <div className="container">
             <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Продукция</h2>
@@ -823,7 +933,7 @@ function App() {
               </div>
             )}
 
-             <div style={{
+            <div style={{
               background: isDarkTheme ? 'rgba(8, 18, 12, 0.6)' : 'rgba(255, 255, 255, 0.9)',
               backdropFilter: 'blur(8px)',
               borderRadius: '16px',
@@ -844,21 +954,165 @@ function App() {
 
         <section id="documents" className="section">
           <div className="container">
-            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Документы</h2>
-            <div className="documents-grid" style={{ gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)' }}>
-              {[
-                { name: "Устав предприятия", link: "#" },
-                { name: "Свидетельство ОГРН", link: "#" },
-                { name: "Лицензия на рыболовство", link: "#" },
-                { name: "Сертификаты качества", link: "#" },
-                { name: "Отчётность 2024", link: "#" },
-                { name: "Коллективный договор", link: "#" }
-              ].map((doc, index) => (
-                <div key={index} className="document-card">
-                  <h3 className="document-name" style={{ fontSize: getFontSize(14) }}>{doc.name}</h3>
-                  <a href={doc.link} className="download-btn" download style={{ fontSize: getFontSize(11) }}>Скачать</a>
+            <h2 className="section-title" style={{ fontSize: getFontSize(24), marginBottom: '20px' }}>Сотрудничество</h2>
+            
+            <div style={{
+              background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '20px',
+              padding: isMobile ? '20px' : '30px',
+              marginBottom: '30px'
+            }}>
+              
+              <div style={{
+                background: isDarkTheme ? '#4a7c59' : '#1e3279',
+                borderRadius: '16px',
+                padding: '20px',
+                marginBottom: '25px',
+                textAlign: 'center'
+              }}>
+                <p style={{
+                  fontSize: getFontSize(14),
+                  lineHeight: '1.5',
+                  margin: 0,
+                  color: '#ffffff'
+                }}>
+                  Может применяться <strong style={{ color: '#ffffff' }}>гибкий ценовой подход</strong> в зависимости от местоположения склада хранения продукции, 
+                  периодов приобретения, объёма партии и условий транспортировки.
+                </p>
+              </div>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+                gap: '20px',
+                marginBottom: '25px'
+              }}>
+                <div style={{
+                  background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.6)',
+                  borderRadius: '16px',
+                  padding: '20px'
+                }}>
+                  <h4 style={{
+                    fontSize: getFontSize(16),
+                    fontWeight: 600,
+                    marginBottom: '12px',
+                    color: isDarkTheme ? '#b0d0b0' : '#1e3279'
+                  }}>
+                    По вопросам приобретения рыбной продукции
+                  </h4>
+                  <p style={{ 
+                    fontSize: getFontSize(14), 
+                    marginBottom: '8px',
+                    color: isDarkTheme ? '#d0d8d0' : '#2a3a4a'
+                  }}>
+                    <strong style={{ color: isDarkTheme ? '#8bc34a' : '#d19250' }}>Девятериков Александр Николаевич</strong>
+                  </p>
+                  <p style={{ 
+                    fontSize: getFontSize(14), 
+                    marginBottom: '8px',
+                    color: isDarkTheme ? '#d0d8d0' : '#2a3a4a'
+                  }}>
+                    первый заместитель генерального директора
+                  </p>
+                  <a href="tel:+79519866036" style={{
+                    display: 'inline-block',
+                    fontSize: getFontSize(18),
+                    fontWeight: 'bold',
+                    color: isDarkTheme ? '#8bc34a' : '#d19250',
+                    textDecoration: 'none',
+                    marginTop: '10px'
+                  }}>
+                    +7-951-986-60-36
+                  </a>
                 </div>
-              ))}
+
+                <div style={{
+                  background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.6)',
+                  borderRadius: '16px',
+                  padding: '20px'
+                }}>
+                  <h4 style={{
+                    fontSize: getFontSize(16),
+                    fontWeight: 600,
+                    marginBottom: '12px',
+                    color: isDarkTheme ? '#b0d0b0' : '#1e3279'
+                  }}>
+                    Стационарный телефон
+                  </h4>
+                  <a href="tel:+73499728066" style={{
+                    display: 'inline-block',
+                    fontSize: getFontSize(18),
+                    fontWeight: 'bold',
+                    color: isDarkTheme ? '#8bc34a' : '#d19250',
+                    textDecoration: 'none',
+                    marginBottom: '5px'
+                  }}>
+                    8 (34997) 2-80-66
+                  </a>
+                </div>
+              </div>
+
+              <div style={{
+                background: isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(255, 255, 255, 0.6)',
+                borderRadius: '16px',
+                padding: '20px'
+              }}>
+                <h4 style={{
+                  fontSize: getFontSize(16),
+                  fontWeight: 600,
+                  marginBottom: '15px',
+                  color: isDarkTheme ? '#b0d0b0' : '#1e3279',
+                  borderBottom: `2px solid ${isDarkTheme ? '#4a7c59' : '#d19250'}`,
+                  paddingBottom: '8px'
+                }}>
+                  Закупочная деятельность
+                </h4>
+                
+                <p style={{
+                  fontSize: getFontSize(13),
+                  lineHeight: '1.5',
+                  marginBottom: '15px',
+                  color: isDarkTheme ? '#d0d8d0' : '#2a3a4a'
+                }}>
+                  Наша организация проводит закупки на основании Федерального закона от 18.07.2011 № 223-ФЗ 
+                  «О закупках товаров, работ, услуг отдельными видами юридических лиц».
+                </p>
+                
+                <p style={{
+                  fontSize: getFontSize(13),
+                  lineHeight: '1.5',
+                  marginBottom: 0,
+                  color: isDarkTheme ? '#d0d8d0' : '#2a3a4a'
+                }}>
+                  <strong>Соблюдение принципов прозрачности, конкуренции и эффективного расходования средств</strong> – 
+                  обязательное условие нашей закупочной деятельности. Все процедуры осуществляются открыто и 
+                  регламентируются утвержденным Положением о закупках товаров, работ, услуг.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+              <a 
+                href={companyCard}
+                download="Карточка_предприятия_Совхоз_Пуровский.pdf"
+                style={{
+                  display: 'inline-block',
+                  background: isDarkTheme ? '#4a7c59' : '#d19250',
+                  color: 'white',
+                  padding: '12px 28px',
+                  borderRadius: '40px',
+                  textDecoration: 'none',
+                  fontSize: getFontSize(15),
+                  fontWeight: 'bold',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = isDarkTheme ? '#5a9c6e' : '#e0a060'}
+                onMouseLeave={(e) => e.currentTarget.style.background = isDarkTheme ? '#4a7c59' : '#d19250'}
+              >
+                Скачать карточку предприятия (PDF)
+              </a>
             </div>
           </div>
         </section>
@@ -942,6 +1196,72 @@ function App() {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+        .products-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: ${getFontSize(11)};
+        }
+        .products-table th,
+        .products-table td {
+          border: 1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.3)' : 'rgba(0,0,0,0.1)'};
+          padding: 8px 12px;
+          text-align: left;
+        }
+        .products-table th {
+          background: ${isDarkTheme ? 'rgba(74, 124, 89, 0.3)' : 'rgba(30, 50, 121, 0.1)'};
+          font-weight: 600;
+        }
+        .footnote {
+          font-size: ${getFontSize(10)};
+          color: ${isDarkTheme ? '#b0d0b0' : '#4a6a7a'};
+          margin-top: 10px;
+          padding: 8px;
+          background: ${isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(0,0,0,0.03)'};
+          border-radius: 8px;
+        }
+        .font-control {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          display: flex;
+          gap: 10px;
+          background: ${isDarkTheme ? 'rgba(8, 18, 12, 0.8)' : 'rgba(255, 255, 255, 0.9)'};
+          padding: 10px 15px;
+          border-radius: 40px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+          z-index: 100;
+        }
+        .font-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: none;
+          font-size: 20px;
+          font-weight: bold;
+          cursor: pointer;
+          background: ${isDarkTheme ? '#4a7c59' : '#1e3279'};
+          color: white;
+        }
+        .font-size-indicator {
+          font-size: 14px;
+          font-weight: 600;
+          min-width: 45px;
+          text-align: center;
+          color: ${isDarkTheme ? '#b0d0b0' : '#1e3279'};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        @media (min-width: 769px) {
+          .font-control {
+            display: none;
+          }
+        }
+        .header {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
         }
       `}</style>
     </div>
