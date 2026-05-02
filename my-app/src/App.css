@@ -654,17 +654,23 @@ body.light-theme .footnote {
 }
 
 /* ============================================ */
-/* ПРОДУКЦИЯ - ТАБЛИЦА ПО ЦЕНТРУ, УЖЕ */
+/* ПРОДУКЦИЯ - ТАБЛИЦА ПО ЦЕНТРУ */
 /* ============================================ */
 
+/* ============================================ */
+/* ПРОДУКЦИЯ - ТАБЛИЦЫ */
+/* ============================================ */
+
+/* Таблицы с горизонтальной прокруткой на мобильных */
 .products-table-wrapper {
-  display: flex;
-  justify-content: center;
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .products-table {
-  width: 60%;
+  width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   font-size: 11px;
 }
@@ -672,9 +678,9 @@ body.light-theme .footnote {
 .products-table th,
 .products-table td {
   border: 1px solid rgba(100, 180, 100, 0.3);
-  padding: 6px 8px;
+  padding: 8px 12px;
   text-align: left;
-  vertical-align: top;
+  white-space: nowrap;
 }
 
 .products-table th {
@@ -684,29 +690,61 @@ body.light-theme .footnote {
 
 .footnote {
   font-size: 10px;
-  margin-top: 12px;
-  padding: 10px;
+  margin-top: 10px;
+  padding: 8px;
   background: rgba(8, 18, 12, 0.4);
   border-radius: 8px;
   line-height: 1.4;
-  width: 60%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
-/* Для мобильных - таблица шире */
+/* На мобильных - таблица с прокруткой и видимая первая колонка */
 @media (max-width: 768px) {
   .products-table {
-    width: 100%;
-    font-size: 9px;
+    min-width: 500px;
+    font-size: 10px;
+  }
+  
+  .products-table th,
+  .products-table td {
+    padding: 6px 8px;
+    white-space: normal;
+    word-break: break-word;
+  }
+  
+  .products-table th:first-child,
+  .products-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: inherit;
+    z-index: 1;
   }
   
   .footnote {
     width: 100%;
-    font-size: 8px;
+    font-size: 9px;
+    overflow-x: auto;
   }
 }
 
+/* Светлая тема для таблиц */
+body.light-theme .products-table th {
+  background: rgba(30, 50, 121, 0.15);
+  color: #1a2a3a;
+}
+
+body.light-theme .products-table td {
+  color: #1a2a3a;
+  border-color: #1e3279;
+}
+
+body.light-theme .products-table th {
+  border-color: #1e3279;
+}
+
+body.light-theme .footnote {
+  background: rgba(30, 50, 121, 0.08);
+  color: #1a2a3a;
+}
 /* ============================================ */
 /* БУРГЕР-МЕНЮ И МОБИЛЬНЫЕ ЭЛЕМЕНТЫ */
 /* ============================================ */
@@ -1419,7 +1457,7 @@ h1, h2, h3, h4, .section-title, .logo {
 
 .font-control-vertical {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   right: 16px;
   display: flex;
   flex-direction: column;
@@ -1521,4 +1559,118 @@ body.light-theme .font-btn-vertical:active {
 
 .font-control-visible {
   opacity: 1 !important;
+}
+
+/* ============================================ */
+/* ПРОДУКЦИЯ - ТАБЛИЦЫ ПО ЦЕНТРУ */
+/* ============================================ */
+
+.products-section {
+  width: 100%;
+}
+
+.products-table-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.products-table {
+  width: auto;
+  min-width: 300px;
+  border-collapse: collapse;
+  font-size: 11px;
+  margin: 0 auto;
+}
+
+.products-table th,
+.products-table td {
+  border: 1px solid rgba(100, 180, 100, 0.3);
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.products-table th {
+  background: rgba(74, 124, 89, 0.3);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Для десктопа - таблица уже */
+@media (min-width: 769px) {
+  .products-table {
+    width: 70%;
+  }
+}
+
+/* Для мобильных - таблица на всю ширину, без скролла */
+@media (max-width: 768px) {
+  .products-table {
+    width: 100%;
+    font-size: 10px;
+  }
+  
+  .products-table th,
+  .products-table td {
+    padding: 6px 8px;
+    word-break: break-word;
+    white-space: normal;
+  }
+  
+  .products-table th {
+    white-space: nowrap;
+  }
+}
+
+/* Светлая тема */
+body.light-theme .products-table th {
+  background: rgba(30, 50, 121, 0.15);
+  color: #1a2a3a;
+}
+
+body.light-theme .products-table td {
+  color: #1a2a3a;
+  border-color: #1e3279;
+}
+
+body.light-theme .products-table th {
+  border-color: #1e3279;
+}
+
+.footnote {
+  font-size: 10px;
+  margin-top: 10px;
+  padding: 8px;
+  background: rgba(8, 18, 12, 0.4);
+  border-radius: 8px;
+  line-height: 1.4;
+  width: auto;
+  display: inline-block;
+  text-align: center;
+}
+
+.footnote-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+body.light-theme .footnote {
+  background: rgba(30, 50, 121, 0.08);
+  color: #1a2a3a;
+}
+
+.products-table .name-column {
+  width: 25%;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.products-table .desc-column {
+  width: 75%;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.4;
 }

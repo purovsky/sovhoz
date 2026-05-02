@@ -46,7 +46,7 @@ function App() {
 
   const isMobile = windowWidth <= 768;
 
-  const [showFontControls, setShowFontControls] = useState(true)
+  const [showFontControls, setShowFontControls] = useState(false)
 const hideTimeoutRef = useRef(null)
 
 // Измените функции увеличения/уменьшения шрифта
@@ -920,43 +920,40 @@ const galleryImages = [
             </button>
 
             {isFishingOpen && (
-              <div style={{
-                marginBottom: '24px',
-                overflowX: 'auto',
-                animation: 'slideDown 0.3s ease-out',
-                display: 'flex',
-                justifyContent: 'center',
-                width: '100%'
-              }}>
-                <table className="products-table">
-                  <thead>
-                    <tr>
-                      {fishingColumns.map((col, idx) => (
-                        <th key={idx}>{col}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {fishingData.map((item, idx) => (
-                      <tr key={idx}>
-                        <td>{item.name}</td>
-                        <td>{item.мелкая}</td>
-                        <td>{item.средняя}</td>
-                        <td>{item.крупная}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+  <div className="products-table-wrapper">
+    <table className="products-table">
+      <thead>
+        <tr>
+          {fishingColumns.map((col, idx) => (
+            <th key={idx}>{col}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {fishingData.map((item, idx) => (
+          <tr key={idx}>
+            <td>{item.name}</td>
+            <td>{item.мелкая}</td>
+            <td>{item.средняя}</td>
+            <td>{item.крупная}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
-            {isFishingOpen && (
-              <div className="footnote" style={{ textAlign: 'center' }}>
-                * Общая информация для всей продукции рыболовства:<br />
-                Сезон вылова: зимнего вылова (кроме карася — лето/осень вылова в глазировке).<br />
-                Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
-              </div>
-            )}
+{isFishingOpen && (
+  <div className="footnote-wrapper">
+    <div className="footnote">
+      * Общая информация для всей продукции рыболовства:<br />
+      Сезон вылова: зимнего вылова (кроме карася — лето/осень вылова в глазировке).<br />
+      Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
+    </div>
+  </div>
+)}
+
+    
 
             <button
               onClick={() => setIsAquacultureOpen(!isAquacultureOpen)}
@@ -989,40 +986,48 @@ const galleryImages = [
               }}>▼</span>
             </button>
 
-            {isAquacultureOpen && (
-              <div style={{
-                marginBottom: '24px',
-                overflowX: 'auto',
-                animation: 'slideDown 0.3s ease-out',
-                display: 'flex',
-                justifyContent: 'center',
-                width: '100%'
-              }}>
-                <table className="products-table">
-                  <thead>
-                    <tr>
-                      <th>Наименование</th>
-                      <th>Особенности</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {aquacultureData.map((item, idx) => (
-                      <tr key={idx}>
-                        <td>{item.name}</td>
-                        <td>{item.особенности}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+{isAquacultureOpen && (
+  <div className="products-table-wrapper">
+    <table className="products-table">
+      <thead>
+        <tr>
+          <th className="name-column">Наименование</th>
+          <th className="desc-column">Особенности</th>
+        </tr>
+      </thead>
+      <tbody>
+        {aquacultureData.map((item, idx) => (
+          <tr key={idx}>
+            <td style={{ 
+              fontWeight: 600, 
+              whiteSpace: 'nowrap',
+              verticalAlign: 'top'
+            }}>
+              {item.name}
+            </td>
+            <td style={{ 
+              lineHeight: '1.4',
+              verticalAlign: 'top',
+              wordBreak: 'break-word',
+              whiteSpace: 'normal'
+            }}>
+              {item.особенности}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
-            {isAquacultureOpen && (
-              <div className="footnote" style={{ textAlign: 'center' }}>
-                * Общая информация для всей продукции рыбоводства:<br />
-                Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
-              </div>
-            )}
+{isAquacultureOpen && (
+  <div className="footnote-wrapper">
+    <div className="footnote">
+      * Общая информация для всей продукции рыбоводства:<br />
+      Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
+    </div>
+  </div>
+)}
 
             <div style={{
               background: isDarkTheme ? 'rgba(8, 18, 12, 0.6)' : 'rgba(255, 255, 255, 0.9)',
@@ -1298,7 +1303,7 @@ const galleryImages = [
         </div>
       </footer>
 
-      <style>{`
+      {/* <style>{`
         @keyframes slideDown {
           from {
             opacity: 0;
@@ -1375,7 +1380,7 @@ const galleryImages = [
           top: 0;
           z-index: 1000;
         }
-      `}</style>
+      `}</style> */}
     </div>
   )
 }
