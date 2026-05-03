@@ -1742,3 +1742,69 @@ body.light-theme .footnote {
     background-position: -200% 0;
   }
 }
+
+/* Стабилизация карусели на мобильных */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.carousel-slide {
+  position: relative;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.carousel-slide > div {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.carousel-slide [style*="transform"] {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* Фиксация высоты на мобильных */
+@media (max-width: 768px) {
+  .carousel-container {
+    min-height: 280px;
+    height: 280px;
+  }
+  
+  .carousel-slide {
+    min-height: 280px !important;
+    height: 280px !important;
+  }
+  
+  .carousel-slide > div {
+    height: 250px !important;
+  }
+}
+
+/* Стабилизация всей страницы на мобильных */
+@media (max-width: 768px) {
+  .section {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .container {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Предотвращение перерисовки при анимациях */
+  .carousel-slide * {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
