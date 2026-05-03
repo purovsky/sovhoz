@@ -29,7 +29,7 @@ function App() {
   const [touchStart, setTouchStart] = useState(null)
   const [touchEnd, setTouchEnd] = useState(null)
   const [imagesLoaded, setImagesLoaded] = useState({})
-  const [isDarkTheme, setIsDarkTheme] = useState(true)
+  const [isDarkTheme, setIsDarkTheme] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activeTab, setActiveTab] = useState('mission')
@@ -37,6 +37,9 @@ function App() {
   const [isAquacultureOpen, setIsAquacultureOpen] = useState(false)
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1)
   const [isMapFullscreen, setIsMapFullscreen] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const mobileMenuRef = useRef(null)
+  const carouselRef = useRef(null)
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -47,89 +50,76 @@ function App() {
   const isMobile = windowWidth <= 768;
 
   const [showFontControls, setShowFontControls] = useState(false)
-const hideTimeoutRef = useRef(null)
+  const hideTimeoutRef = useRef(null)
 
-// Измените функции увеличения/уменьшения шрифта
-const increaseFontSize = () => {
-  if (fontSizeMultiplier < 1.4) {
-    setFontSizeMultiplier(prev => prev + 0.1)
+  const increaseFontSize = () => {
+    if (fontSizeMultiplier < 1.4) {
+      setFontSizeMultiplier(prev => prev + 0.1)
+    }
+    setShowFontControls(true)
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+    hideTimeoutRef.current = setTimeout(() => setShowFontControls(false), 2000)
   }
-  setShowFontControls(true)
-  if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-  hideTimeoutRef.current = setTimeout(() => setShowFontControls(false), 2000)
-}
 
-const decreaseFontSize = () => {
-  if (fontSizeMultiplier > 0.8) {
-    setFontSizeMultiplier(prev => prev - 0.1)
+  const decreaseFontSize = () => {
+    if (fontSizeMultiplier > 0.8) {
+      setFontSizeMultiplier(prev => prev - 0.1)
+    }
+    setShowFontControls(true)
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
+    hideTimeoutRef.current = setTimeout(() => setShowFontControls(false), 2000)
   }
-  setShowFontControls(true)
-  if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
-  hideTimeoutRef.current = setTimeout(() => setShowFontControls(false), 2000)
-}
-
-  // const increaseFontSize = () => {
-  //   if (fontSizeMultiplier < 1.4) {
-  //     setFontSizeMultiplier(prev => prev + 0.1)
-  //   }
-  // }
-
-  // const decreaseFontSize = () => {
-  //   if (fontSizeMultiplier > 0.8) {
-  //     setFontSizeMultiplier(prev => prev - 0.1)
-  //   }
-  // }
 
   const getFontSize = (baseSize) => {
     return `${baseSize * fontSizeMultiplier}px`
   }
 
-const galleryImages = [
-  {
-    url: dance,
-    title: "Танцы"
-  },
-  {
-    url: avrora,
-    title: "Аврора (северное сияние)"
-  },
-  {
-    url: berry,
-    title: "Ягоды северные"
-  },
-  {
-    url: fish,
-    title: "Рыболовство"
-  },
-  {
-    url: fish1,
-    title: "Рыболовство"
-  },
-  {
-    url: fish2,
-    title: "Рыболовство"
-  },
-  {
-    url: fish3,
-    title: "Рыболовство"
-  },
-  {
-    url: fisher,
-    title: "Рыбаки Пуровского района"
-  },
-  {
-    url: tarko,
-    title: "Тарко-Сале"
-  },
-  {
-    url: winter,
-    title: "Зима"
-  },
-  {
-    url: storage,
-    title: "Склад хранения продукции"
-  }
-]
+  const galleryImages = [
+    {
+      url: dance,
+      title: "Танцы"
+    },
+    {
+      url: avrora,
+      title: "Аврора (северное сияние)"
+    },
+    {
+      url: berry,
+      title: "Ягоды северные"
+    },
+    {
+      url: fish,
+      title: "Рыболовство"
+    },
+    {
+      url: fish1,
+      title: "Рыболовство"
+    },
+    {
+      url: fish2,
+      title: "Рыболовство"
+    },
+    {
+      url: fish3,
+      title: "Рыболовство"
+    },
+    {
+      url: fisher,
+      title: "Рыбаки Пуровского района"
+    },
+    {
+      url: tarko,
+      title: "Тарко-Сале"
+    },
+    {
+      url: winter,
+      title: "Зима"
+    },
+    {
+      url: storage,
+      title: "Склад хранения продукции"
+    }
+  ]
 
   const fishingData = [
     { name: "Щука", мелкая: "до 25 см", средняя: "от 25 см до 45 см", крупная: "от 45 см до 60 см" },
@@ -159,10 +149,12 @@ const galleryImages = [
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme')
-    if (savedTheme === 'light') {
-      setIsDarkTheme(false)
-    } else if (savedTheme === 'dark') {
+    if (savedTheme === 'dark') {
       setIsDarkTheme(true)
+    } else if (savedTheme === 'light') {
+      setIsDarkTheme(false)
+    } else {
+      setIsDarkTheme(false)
     }
   }, [])
 
@@ -176,14 +168,24 @@ const galleryImages = [
     }
   }, [isDarkTheme])
 
+  // Предзагрузка всех изображений
   useEffect(() => {
-    galleryImages.forEach((img, idx) => {
-      const image = new Image()
-      image.src = img.url
-      image.onload = () => {
-        setImagesLoaded(prev => ({ ...prev, [idx]: true }))
-      }
-    })
+    const loadAllImages = async () => {
+      const loadPromises = galleryImages.map((img, idx) => {
+        return new Promise((resolve) => {
+          const image = new Image()
+          image.src = img.url
+          image.onload = () => {
+            setImagesLoaded(prev => ({ ...prev, [idx]: true }))
+            resolve()
+          }
+          image.onerror = () => resolve()
+        })
+      })
+      await Promise.all(loadPromises)
+    }
+    
+    loadAllImages()
   }, [])
 
   useEffect(() => {
@@ -209,34 +211,70 @@ const galleryImages = [
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const onTouchStart = (e) => {
-    setTouchEnd(null)
-    setTouchStart(e.targetTouches[0].clientX)
-  }
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX)
-  }
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
-    const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
+  // Бесконечный скролл для карусели (только для мобильных)
+  useEffect(() => {
+    if (!isMobile || !carouselRef.current) return;
     
-    if (isLeftSwipe) {
-      nextImage()
-    } else if (isRightSwipe) {
-      prevImage()
-    }
-  }
+    const handleTransitionEnd = () => {
+      if (!carouselRef.current) return;
+      
+      if (currentImageIndex >= galleryImages.length) {
+        carouselRef.current.style.transition = 'none';
+        setCurrentImageIndex(0);
+        carouselRef.current.style.transform = `translateX(-${1 * 100}%)`;
+        
+        setTimeout(() => {
+          if (carouselRef.current) {
+            carouselRef.current.style.transition = 'transform 0.5s ease-in-out';
+          }
+        }, 50);
+      }
+      else if (currentImageIndex < 0) {
+        carouselRef.current.style.transition = 'none';
+        setCurrentImageIndex(galleryImages.length - 1);
+        carouselRef.current.style.transform = `translateX(-${galleryImages.length * 100}%)`;
+        
+        setTimeout(() => {
+          if (carouselRef.current) {
+            carouselRef.current.style.transition = 'transform 0.5s ease-in-out';
+          }
+        }, 50);
+      }
+    };
+    
+    const carousel = carouselRef.current;
+    carousel.addEventListener('transitionend', handleTransitionEnd);
+    
+    return () => {
+      carousel.removeEventListener('transitionend', handleTransitionEnd);
+    };
+  }, [currentImageIndex, galleryImages.length, isMobile]);
+
+  // Автопрокрутка для мобильных
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => prev + 1);
+    }, 4000);
+    
+    return () => clearInterval(interval);
+  }, [isMobile]);
+
+  // Обновление transform при изменении индекса (только для мобильных)
+  useEffect(() => {
+    if (!isMobile || !carouselRef.current) return;
+    carouselRef.current.style.transform = `translateX(-${(currentImageIndex + 1) * 100}%)`;
+  }, [currentImageIndex, isMobile]);
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length)
+    if (isMobile) return; // На мобильных автопрокрутка
+    setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
   }
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length)
+    if (isMobile) return; // На мобильных автопрокрутка
+    setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
   }
 
   const scrollToSection = (sectionId) => {
@@ -247,6 +285,21 @@ const galleryImages = [
       element.scrollIntoView({ behavior: 'smooth' })
     }
   }
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        const burgerMenu = document.querySelector('.burger-menu')
+        if (burgerMenu && !burgerMenu.contains(event.target)) {
+          setIsMenuOpen(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMenuOpen])
 
   useEffect(() => {
     if (!isDarkTheme) return
@@ -357,7 +410,6 @@ const galleryImages = [
     contacts: 'Контакты'
   }
 
-  // // Компонент табов с полноценными табами и полной заливкой фона
   const TabContent = () => {
     const [activeTabIndex, setActiveTabIndex] = useState(0)
     
@@ -599,6 +651,13 @@ const galleryImages = [
     </div>
   )
 
+  // Получаем реальный индекс для отображения (0 - galleryImages.length-1)
+  const getRealIndex = () => {
+    if (currentImageIndex < 0) return galleryImages.length - 1;
+    if (currentImageIndex >= galleryImages.length) return 0;
+    return currentImageIndex;
+  };
+
   return (
     <div className={`app ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
       {isDarkTheme && <canvas id="auroraCanvas" className="aurora-canvas"></canvas>}
@@ -643,11 +702,12 @@ const galleryImages = [
           </button>
           
           <div style={{
-            width: '90%',
-            height: '85%',
+            width: isMobile ? '95%' : '90%',
+            height: isMobile ? '85%' : '85%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            overflow: 'auto'
           }}>
             <img 
               src={map}
@@ -655,6 +715,8 @@ const galleryImages = [
               style={{
                 maxWidth: '100%',
                 maxHeight: '100%',
+                width: 'auto',
+                height: 'auto',
                 objectFit: 'contain',
                 borderRadius: '8px'
               }}
@@ -677,15 +739,15 @@ const galleryImages = [
         </div>
       )}
 
-{isMobile && (
-  <div 
-    className={`font-control-vertical ${showFontControls ? 'font-control-visible' : ''}`}
-    style={{ opacity: showFontControls ? 1 : 0.4 }}
-  >
-    <button className="font-btn-vertical" onClick={increaseFontSize} aria-label="Увеличить шрифт">+</button>
-    <button className="font-btn-vertical" onClick={decreaseFontSize} aria-label="Уменьшить шрифт">−</button>
-  </div>
-)}
+      {isMobile && (
+        <div 
+          className={`font-control-vertical ${showFontControls ? 'font-control-visible' : ''}`}
+          style={{ opacity: showFontControls ? 1 : 0.4 }}
+        >
+          <button className="font-btn-vertical" onClick={increaseFontSize} aria-label="Увеличить шрифт">+</button>
+          <button className="font-btn-vertical" onClick={decreaseFontSize} aria-label="Уменьшить шрифт">−</button>
+        </div>
+      )}
 
       <header className="header">
         {!isDarkTheme && !isMobile && <HeaderBorder />}
@@ -741,7 +803,7 @@ const galleryImages = [
         </div>
       </header>
 
-      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`}>
+      <div className={`mobile-menu ${isMenuOpen ? 'open' : ''}`} ref={mobileMenuRef}>
         <div className="mobile-menu-content">
           {sections.map((section) => (
             <button
@@ -763,127 +825,188 @@ const galleryImages = [
           </div>
         </section>
 
-<section id="gallery" className="section">
-  <div className="container">
-    <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Галерея</h2>
-    <div className="carousel-container">
-      {!isMobile && (
-        <button className="carousel-btn prev" onClick={prevImage}>❮</button>
-      )}
-      <div 
-        className="carousel-slide"
-        style={{
-          flex: 1,
-          textAlign: 'center',
-          minHeight: isMobile ? '300px' : '450px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden',
-          position: 'relative'
-        }}
-      >
-        <div
-          style={{
-            width: isMobile ? '100%' : '500px',
-            maxWidth: '100%',
-            height: isMobile ? '250px' : '350px',
-            position: 'relative',
-            overflow: 'hidden',
-            borderRadius: '16px',
-            padding: isMobile ? '0 10px' : '0'
-          }}
-        >
-          {!imagesLoaded[currentImageIndex] ? (
-            <div className="skeleton skeleton-image"></div>
-          ) : (
-            <img 
-              src={galleryImages[currentImageIndex].url} 
-              alt={galleryImages[currentImageIndex].title}
-              className="carousel-image"
-              loading="lazy"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          )}
-        </div>
-        {!isMobile && (
-          <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>
-            {galleryImages[currentImageIndex].title}
-          </p>
-        )}
-        
-        {/* Мобильные кнопки на самом изображении */}
-        {isMobile && (
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            right: 0,
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: '0 10px',
-            pointerEvents: 'none'
-          }}>
-            <button 
-              onClick={prevImage}
-              style={{
-                pointerEvents: 'auto',
-                background: 'rgba(0,0,0,0.5)',
-                border: 'none',
-                color: 'white',
-                fontSize: '24px',
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              ❮
-            </button>
-            <button 
-              onClick={nextImage}
-              style={{
-                pointerEvents: 'auto',
-                background: 'rgba(0,0,0,0.5)',
-                border: 'none',
-                color: 'white',
-                fontSize: '24px',
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              ❯
-            </button>
+        <section id="gallery" className="section">
+          <div className="container">
+            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Галерея</h2>
+            <div className="carousel-container" style={{ position: 'relative', width: '100%' }}>
+              {!isMobile && (
+                <button className="carousel-btn prev" onClick={prevImage}>❮</button>
+              )}
+              <div 
+                className="carousel-slide"
+                style={{
+                  flex: 1,
+                  textAlign: 'center',
+                  minHeight: isMobile ? '280px' : '450px',
+                  height: isMobile ? '280px' : '450px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  position: 'relative'
+                }}
+              >
+                <div
+                  style={{
+                    width: isMobile ? '100%' : '500px',
+                    maxWidth: '100%',
+                    height: isMobile ? '250px' : '350px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    borderRadius: '16px'
+                  }}
+                >
+                  {isMobile ? (
+                    // Mobile: бесконечная карусель с дубликатами
+                    <div
+                      ref={carouselRef}
+                      style={{
+                        display: 'flex',
+                        transition: 'transform 0.5s ease-in-out',
+                        transform: `translateX(-${(currentImageIndex + 1) * 100}%)`,
+                        height: '100%'
+                      }}
+                    >
+                      {/* Последнее изображение для бесконечного скролла влево */}
+                      <div
+                        style={{
+                          minWidth: '100%',
+                          width: '100%',
+                          height: '100%',
+                          position: 'relative'
+                        }}
+                      >
+                        {imagesLoaded[galleryImages.length - 1] ? (
+                          <img 
+                            src={galleryImages[galleryImages.length - 1].url} 
+                            alt={galleryImages[galleryImages.length - 1].title}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover',
+                              position: 'absolute',
+                              top: 0,
+                              left: 0
+                            }}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="skeleton skeleton-image" style={{ width: '100%', height: '100%' }}></div>
+                        )}
+                      </div>
+                      
+                      {/* Все основные изображения */}
+                      {galleryImages.map((image, index) => (
+                        <div
+                          key={index}
+                          style={{
+                            minWidth: '100%',
+                            width: '100%',
+                            height: '100%',
+                            position: 'relative'
+                          }}
+                        >
+                          {imagesLoaded[index] ? (
+                            <img 
+                              src={image.url} 
+                              alt={image.title}
+                              style={{ 
+                                width: '100%', 
+                                height: '100%', 
+                                objectFit: 'cover',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0
+                              }}
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="skeleton skeleton-image" style={{ width: '100%', height: '100%' }}></div>
+                          )}
+                        </div>
+                      ))}
+                      
+                      {/* Первое изображение для бесконечного скролла вправо */}
+                      <div
+                        style={{
+                          minWidth: '100%',
+                          width: '100%',
+                          height: '100%',
+                          position: 'relative'
+                        }}
+                      >
+                        {imagesLoaded[0] ? (
+                          <img 
+                            src={galleryImages[0].url} 
+                            alt={galleryImages[0].title}
+                            style={{ 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover',
+                              position: 'absolute',
+                              top: 0,
+                              left: 0
+                            }}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="skeleton skeleton-image" style={{ width: '100%', height: '100%' }}></div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // Desktop: обычная карусель с кнопками
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        position: 'relative'
+                      }}
+                    >
+                      {imagesLoaded[currentImageIndex] ? (
+                        <img 
+                          src={galleryImages[currentImageIndex].url} 
+                          alt={galleryImages[currentImageIndex].title}
+                          style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0
+                          }}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="skeleton skeleton-image" style={{ width: '100%', height: '100%' }}></div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {/* {!isMobile && (
+                  // <p className="image-caption" style={{ marginTop: '12px', fontSize: getFontSize(14) }}>
+                    {galleryImages[currentImageIndex].title}
+                  </p>
+                )} */}
+              </div>
+              {!isMobile && (
+                <button className="carousel-btn next" onClick={nextImage}>❯</button>
+              )}
+            </div>
+            {!isMobile && (
+              <div className="carousel-dots">
+                {galleryImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`dot ${currentImageIndex === index ? 'active' : ''}`}
+                    onClick={() => setCurrentImageIndex(index)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      {!isMobile && (
-        <button className="carousel-btn next" onClick={nextImage}>❯</button>
-      )}
-    </div>
-    {!isMobile && (
-      <div className="carousel-dots">
-        {galleryImages.map((_, index) => (
-          <button
-            key={index}
-            className={`dot ${currentImageIndex === index ? 'active' : ''}`}
-            onClick={() => setCurrentImageIndex(index)}
-          />
-        ))}
-      </div>
-    )}
-  </div>
-</section>
+        </section>
 
         <section id="products" className="section">
           <div className="container">
@@ -920,40 +1043,38 @@ const galleryImages = [
             </button>
 
             {isFishingOpen && (
-  <div className="products-table-wrapper">
-    <table className="products-table">
-      <thead>
-        <tr>
-          {fishingColumns.map((col, idx) => (
-            <th key={idx}>{col}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {fishingData.map((item, idx) => (
-          <tr key={idx}>
-            <td>{item.name}</td>
-            <td>{item.мелкая}</td>
-            <td>{item.средняя}</td>
-            <td>{item.крупная}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)}
+              <div className="products-table-wrapper">
+                <table className="products-table">
+                  <thead>
+                    <tr>
+                      {fishingColumns.map((col, idx) => (
+                        <th key={idx}>{col}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fishingData.map((item, idx) => (
+                      <tr key={idx}>
+                        <td>{item.name}</td>
+                        <td>{item.мелкая}</td>
+                        <td>{item.средняя}</td>
+                        <td>{item.крупная}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-{isFishingOpen && (
-  <div className="footnote-wrapper">
-    <div className="footnote">
-      * Общая информация для всей продукции рыболовства:<br />
-      Сезон вылова: зимнего вылова (кроме карася — лето/осень вылова в глазировке).<br />
-      Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
-    </div>
-  </div>
-)}
-
-    
+            {isFishingOpen && (
+              <div className="footnote-wrapper">
+                <div className="footnote">
+                  * Общая информация для всей продукции рыболовства:<br />
+                  Сезон вылова: зимнего вылова (кроме карася — лето/осень вылова в глазировке).<br />
+                  Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
+                </div>
+              </div>
+            )}
 
             <button
               onClick={() => setIsAquacultureOpen(!isAquacultureOpen)}
@@ -986,48 +1107,48 @@ const galleryImages = [
               }}>▼</span>
             </button>
 
-{isAquacultureOpen && (
-  <div className="products-table-wrapper">
-    <table className="products-table">
-      <thead>
-        <tr>
-          <th className="name-column">Наименование</th>
-          <th className="desc-column">Особенности</th>
-        </tr>
-      </thead>
-      <tbody>
-        {aquacultureData.map((item, idx) => (
-          <tr key={idx}>
-            <td style={{ 
-              fontWeight: 600, 
-              whiteSpace: 'nowrap',
-              verticalAlign: 'top'
-            }}>
-              {item.name}
-            </td>
-            <td style={{ 
-              lineHeight: '1.4',
-              verticalAlign: 'top',
-              wordBreak: 'break-word',
-              whiteSpace: 'normal'
-            }}>
-              {item.особенности}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)}
+            {isAquacultureOpen && (
+              <div className="products-table-wrapper">
+                <table className="products-table">
+                  <thead>
+                    <tr>
+                      <th className="name-column">Наименование</th>
+                      <th className="desc-column">Особенности</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {aquacultureData.map((item, idx) => (
+                      <tr key={idx}>
+                        <td style={{ 
+                          fontWeight: 600, 
+                          whiteSpace: 'nowrap',
+                          verticalAlign: 'top'
+                        }}>
+                          {item.name}
+                        </td>
+                        <td style={{ 
+                          lineHeight: '1.4',
+                          verticalAlign: 'top',
+                          wordBreak: 'break-word',
+                          whiteSpace: 'normal'
+                        }}>
+                          {item.особенности}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-{isAquacultureOpen && (
-  <div className="footnote-wrapper">
-    <div className="footnote">
-      * Общая информация для всей продукции рыбоводства:<br />
-      Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
-    </div>
-  </div>
-)}
+            {isAquacultureOpen && (
+              <div className="footnote-wrapper">
+                <div className="footnote">
+                  * Общая информация для всей продукции рыбоводства:<br />
+                  Упаковка: полипропиленовый мешок с вкладышем. Срок годности: 8 месяцев. Хранение при t -18°C.
+                </div>
+              </div>
+            )}
 
             <div style={{
               background: isDarkTheme ? 'rgba(8, 18, 12, 0.6)' : 'rgba(255, 255, 255, 0.9)',
@@ -1213,88 +1334,93 @@ const galleryImages = [
           </div>
         </section>
 
-        {/* Секция новостей */}
-<NewsSection isDarkTheme={isDarkTheme} getFontSize={getFontSize} isMobile={isMobile} />
+        {/* News Section */}
+        <NewsSection isDarkTheme={isDarkTheme} getFontSize={getFontSize} isMobile={isMobile} />
       
-   <section id="contacts" className="section">
-  <div className="container">
-    <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Контакты</h2>
-    
-    <div className="contacts-grid-wrapper" style={{
-      display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-      gap: '1.5rem',
-      background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
-      backdropFilter: 'blur(8px)',
-      borderRadius: '24px',
-      padding: isMobile ? '1.5rem' : '2rem',
-      border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : '#d19250'}`
-    }}>
-      
-      <div className="contacts-info-block">
-        <div style={{ marginBottom: '1.2rem' }}>
-          <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон</strong>
-          <p style={{ marginTop: '4px' }}>
-            <a href="tel:+73499728066" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
-              8 (34997) 2-80-66
-            </a>
-          </p>
-        </div>
-        
-        <div style={{ marginBottom: '1.2rem' }}>
-          <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>E-mail</strong>
-          <p style={{ marginTop: '4px' }}>
-            <a href="mailto:zakupki@obpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
-              zakupki@obpur.ru
-            </a>
-          </p>
-        </div>
-        
-        <div>
-          <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Адрес</strong>
-          <p style={{ marginTop: '4px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', lineHeight: 1.5, fontSize: getFontSize(14) }}>
-            Ямало-Ненецкий автономный округ,<br />
-            г. Тарко-Сале, микрорайон Советский, д. 6А
-          </p>
-        </div>
-        
-        {/* Дополнительная информация */}
-        <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.2)' : 'rgba(0,0,0,0.1)'}` }}>
-          <p style={{ fontSize: getFontSize(12), color: isDarkTheme ? '#b0d0b0' : '#4a6a7a' }}>
-            <strong>По вопросам приобретения рыбной продукции:</strong>
-          </p>
-          <p style={{ fontSize: getFontSize(12), marginTop: '5px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a' }}>
-            Девятериков Александр Николаевич — +7-951-986-60-36
-          </p>
-        </div>
-      </div>
-      
-      <div className="contacts-map-block">
-        <iframe 
-          src="https://yandex.ru/map-widget/v1/?ll=77.4167,64.9167&z=15&pt=77.4167,64.9167,pm2rdl&what=Тарко-Сале, микрорайон Советский, 6А"
-          width="100%" 
-          height="250" 
-          style={{ border: 0, borderRadius: '16px' }}
-          allowFullScreen
-          loading="lazy"
-          title="Карта Совхоз Пуровский - г. Тарко-Сале, микрорайон Советский, д. 6А"
-        />
-        <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
-          <a 
-            href="https://yandex.ru/maps/?text=Тарко-Сале+микрорайон+Советский+6А"
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ color: isDarkTheme ? '#8bc34a' : '#1e3279', fontSize: getFontSize(12), textDecoration: 'none' }}
-            onMouseEnter={(e) => e.currentTarget.style.color = isDarkTheme ? '#a0e0a0' : '#2a4a9e'}
-            onMouseLeave={(e) => e.currentTarget.style.color = isDarkTheme ? '#8bc34a' : '#1e3279'}
-          >
-            Открыть в Яндекс.Картах →
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        <section id="contacts" className="section">
+          <div className="container">
+            <h2 className="section-title" style={{ fontSize: getFontSize(28) }}>Контакты</h2>
+            
+            <div className="contacts-grid-wrapper" style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: '1.5rem',
+              background: isDarkTheme ? 'rgba(8, 18, 12, 0.5)' : 'rgba(255, 255, 255, 0.85)',
+              backdropFilter: 'blur(8px)',
+              borderRadius: '24px',
+              padding: isMobile ? '1.5rem' : '2rem',
+              border: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.15)' : '#d19250'}`
+            }}>
+              
+              <div className="contacts-info-block">
+                <div style={{ marginBottom: '1.2rem' }}>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон</strong>
+                  <p style={{ marginTop: '4px' }}>
+                    <a href="tel:+73499728066" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
+                      8 (34997) 2-80-66
+                    </a>
+                  </p>
+                </div>
+                
+                <div style={{ marginBottom: '1.2rem' }}>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>E-mail</strong>
+                  <p style={{ marginTop: '4px' }}>
+                    <a href="mailto:zakupki@obpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
+                      zakupki@obpur.ru
+                    </a>
+                  </p>
+                </div>
+                
+                <div>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Адрес</strong>
+                  <p style={{ marginTop: '4px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', lineHeight: 1.5, fontSize: getFontSize(14) }}>
+                    Ямало-Ненецкий автономный округ,<br />
+                    г. Тарко-Сале, микрорайон Советский, д. 6А
+                  </p>
+                </div>
+                
+                {/* Additional information */}
+                <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.2)' : 'rgba(0,0,0,0.1)'}` }}>
+                  <p style={{ fontSize: getFontSize(12), color: isDarkTheme ? '#b0d0b0' : '#4a6a7a' }}>
+                    <strong>По вопросам приобретения рыбной продукции:</strong>
+                  </p>
+                  <p style={{ fontSize: getFontSize(12), marginTop: '5px', color: isDarkTheme ? '#d0d8d0' : '#2a3a4a' }}>
+                    Девятериков Александр Николаевич
+                  </p>
+                  <p style={{ marginTop: '5px' }}>
+                    <a href="tel:+79519866036" style={{ color: isDarkTheme ? '#8bc34a' : '#1e3279', textDecoration: 'none', fontSize: getFontSize(14), fontWeight: 'bold' }}>
+                      +7-951-986-60-36
+                    </a>
+                  </p>
+                </div>
+              </div>
+              
+              <div className="contacts-map-block">
+                <iframe 
+                  src="https://yandex.ru/map-widget/v1/?ll=77.4167,64.9167&z=15&pt=77.4167,64.9167,pm2rdl&what=Тарко-Сале, микрорайон Советский, 6А"
+                  width="100%" 
+                  height="250" 
+                  style={{ border: 0, borderRadius: '16px' }}
+                  allowFullScreen
+                  loading="lazy"
+                  title="Карта Совхоз Пуровский - г. Тарко-Сале, микрорайон Советский, д. 6А"
+                />
+                <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
+                  <a 
+                    href="https://yandex.ru/maps/?text=Тарко-Сале+микрорайон+Советский+6А"
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ color: isDarkTheme ? '#8bc34a' : '#1e3279', fontSize: getFontSize(12), textDecoration: 'none' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = isDarkTheme ? '#a0e0a0' : '#2a4a9e'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = isDarkTheme ? '#8bc34a' : '#1e3279'}
+                  >
+                    Открыть в Яндекс.Картах →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       <footer className="footer">
@@ -1302,85 +1428,6 @@ const galleryImages = [
           <p style={{ fontSize: getFontSize(12) }}>© 2026 Совхоз "Пуровский". Все права защищены.</p>
         </div>
       </footer>
-
-      {/* <style>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .products-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: ${getFontSize(11)};
-        }
-        .products-table th,
-        .products-table td {
-          border: 1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.3)' : 'rgba(0,0,0,0.1)'};
-          padding: 8px 12px;
-          text-align: left;
-        }
-        .products-table th {
-          background: ${isDarkTheme ? 'rgba(74, 124, 89, 0.3)' : 'rgba(30, 50, 121, 0.1)'};
-          font-weight: 600;
-        }
-        .footnote {
-          font-size: ${getFontSize(10)};
-          color: ${isDarkTheme ? '#b0d0b0' : '#4a6a7a'};
-          margin-top: 10px;
-          padding: 8px;
-          background: ${isDarkTheme ? 'rgba(8, 18, 12, 0.4)' : 'rgba(0,0,0,0.03)'};
-          border-radius: 8px;
-        }
-        .font-control {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          display: flex;
-          gap: 10px;
-          background: ${isDarkTheme ? 'rgba(8, 18, 12, 0.8)' : 'rgba(255, 255, 255, 0.9)'};
-          padding: 10px 15px;
-          border-radius: 40px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-          z-index: 100;
-        }
-        .font-btn {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          border: none;
-          font-size: 20px;
-          font-weight: bold;
-          cursor: pointer;
-          background: ${isDarkTheme ? '#4a7c59' : '#1e3279'};
-          color: white;
-        }
-        .font-size-indicator {
-          font-size: 14px;
-          font-weight: 600;
-          min-width: 45px;
-          text-align: center;
-          color: ${isDarkTheme ? '#b0d0b0' : '#1e3279'};
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        @media (min-width: 769px) {
-          .font-control {
-            display: none;
-          }
-        }
-        .header {
-          position: sticky;
-          top: 0;
-          z-index: 1000;
-        }
-      `}</style> */}
     </div>
   )
 }
