@@ -14,6 +14,30 @@ import fisher from './assets/fisher.jpg'
 import tarko from './assets/tarko.jpg'
 import winter from './assets/winter.jpg'
 import storage from './assets/storage.jpg'
+import gallery1 from './assets/gallery (1).jpg'
+import gallery5 from './assets/gallery (4).png'
+import gallery6 from './assets/gallery (5).png'
+import gallery7 from './assets/gallery (6).jpg'
+import gallery8 from './assets/gallery (6).png'
+import gallery9 from './assets/gallery (7).jpg'
+import gallery10 from './assets/gallery (7).png'
+import gallery11 from './assets/gallery (8).png'
+import gallery12 from './assets/gallery (9).png'
+import gallery13 from './assets/gallery (10).jpg'
+import gallery14 from './assets/gallery (10).png'
+import gallery15 from './assets/gallery (11).jpg'
+import gallery16 from './assets/gallery (11).png'
+import gallery17 from './assets/gallery (12).png'
+import gallery18 from './assets/gallery (13).png'
+import gallery19 from './assets/gallery (14).jpg'
+import gallery20 from './assets/gallery (14).png'
+import gallery21 from './assets/gallery (15).jpg'
+import gallery22 from './assets/gallery (15).png'
+import gallery23 from './assets/gallery (16).png'
+import gallery24 from './assets/gallery (17).png'
+import gallery25 from './assets/gallery (17).jpg'
+import gallery26 from './assets/gallery (18).png'
+import gallery27 from './assets/gallery (18).jpg'
 import NewsSection from './components/NewsSection'
 
 const fontLink = document.createElement('link')
@@ -23,19 +47,43 @@ document.head.appendChild(fontLink)
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 
-// Константы вынесены за пределы компонента
 const galleryImagesConst = [
-  { url: dance, title: "Танцы" },
-  { url: avrora, title: "Аврора (северное сияние)" },
-  { url: berry, title: "Ягоды северные" },
-  { url: fish, title: "Рыболовство" },
-  { url: fish1, title: "Рыболовство" },
-  { url: fish2, title: "Рыболовство" },
-  { url: fish3, title: "Рыболовство" },
-  { url: fisher, title: "Рыбаки Пуровского района" },
-  { url: tarko, title: "Тарко-Сале" },
-  { url: winter, title: "Зима" },
-  { url: storage, title: "Склад хранения продукции" }
+  { url: dance, title: "jpg" },
+  { url: avrora, title: "jpg" },
+  { url: berry, title: "jpg" },
+  { url: fish, title: "jpg" },
+  { url: fish1, title: "jpg" },
+  { url: fish2, title: "jpg" },
+  { url: fish3, title: "jpg" },
+  { url: fisher, title: "jpg" },
+  { url: tarko, title: "jpg" },
+  { url: winter, title: "jpg" },
+  { url: storage, title: "jpg" },
+  { url: gallery1, title: "jpg" },
+  // { url: gallery4, title: "jpg" },
+  { url: gallery5, title: "jpg" },
+  { url: gallery6, title: "jpg" },
+  { url: gallery7, title: "jpg" },
+  { url: gallery8, title: "jpg" },
+  { url: gallery9, title: "jpg" },
+  { url: gallery10, title: "jpg" },
+  { url: gallery11, title: "jpg" },
+  { url: gallery12, title: "jpg" },
+  { url: gallery13, title: "jpg" },
+  { url: gallery14, title: "jpg" },
+  { url: gallery15, title: "jpg" },
+  { url: gallery16, title: "jpg" },
+  { url: gallery17, title: "jpg" },
+  { url: gallery18, title: "jpg" },
+  { url: gallery19, title: "jpg" },
+  { url: gallery20, title: "jpg" },
+  { url: gallery21, title: "jpg" },
+  { url: gallery22, title: "jpg" },
+  { url: gallery23, title: "jpg" },
+  { url: gallery24, title: "jpg" },
+  { url: gallery25, title: "jpg" },
+  { url: gallery26, title: "jpg" },
+  { url: gallery27, title: "jpg" }
 ]
 
 const fishingDataConst = [
@@ -53,7 +101,7 @@ const aquacultureDataConst = [
   { name: "Чир", особенности: "Выращивается в садках в закрытых водоёмах. Ценный вид сиговых рыб. Мясо белое, плотное, с высоким содержанием полезных жиров." },
   { name: "Нельма", особенности: "Выращивается в садках в закрытых водоёмах. Деликатесный вид рыбы из семейства лососёвых. Мясо нежное, жирное, без мелких костей." },
   { name: "Муксун", особенности: "Выращивается в садках в закрытых водоёмах. Северная рыба с нежным мясом и характерным свежим ароматом. Относится к ценным промысловым видам." },
-  { name: "Тугун", особенности: "Выращивается в садках в закрытых водоёмах. Маленькая рыбка из семейства сиговых, также известная как «сельдь сосновская». Имеет приятный огуречный запах." }
+  { name: "Седьдь сосьвинская", особенности: "Выращивается в садках в закрытых водоёмах. Маленькая рыбка из семейства сиговых. Имеет приятный огуречный запах." }
 ]
 
 const fishingColumnsConst = ["Наименование", "Мелочь", "Мелкая", "Средняя", "Крупная"]
@@ -713,7 +761,7 @@ function App() {
   
         <div className="container">
           <div className="header-content">
-            <h1 className="logo" style={{color: 'white', fontSize: isMobile ? getFontSize(18) : getFontSize(24)}}>Совхоз "Пуровский"</h1>
+            <h1 className="logo" style={{color: 'white', fontSize: isMobile ? getFontSize(18) : getFontSize(24)}}>АО "СХ община Пуровская"</h1>
             
             <div className="desktop-nav">
               <nav className="nav">
@@ -1095,7 +1143,7 @@ function App() {
                   margin: 0,
                   color: '#ffffff'
                 }}>
-                  Может применяется <strong style={{ color: '#ffffff' }}>гибкий ценовой подход</strong> в зависимости от местоположения склада хранения продукции, 
+                  Может применяться <strong style={{ color: '#ffffff' }}>гибкий ценовой подход</strong> в зависимости от местоположения склада хранения продукции, 
                   периодов приобретения, объёма партии и условий транспортировки.
                 </p>
               </div>
@@ -1156,7 +1204,7 @@ function App() {
                     marginBottom: '12px',
                     color: isDarkTheme ? '#b0d0b0' : '#1e3279'
                   }}>
-                    Стационарный телефон
+                    Телефон приёмной
                   </h4>
                   <a href="tel:+73499728066" style={{
                     display: 'inline-block',
@@ -1213,7 +1261,7 @@ function App() {
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
               <a 
                 href={companyCard}
-                download="Карточка_предприятия_Совхоз_Пуровский.pdf"
+                download="Карточка_предприятия_АО_СХ_община_Пуровская.pdf"
                 style={{
                   display: 'inline-block',
                   background: isDarkTheme ? '#4a7c59' : '#d19250',
@@ -1229,7 +1277,7 @@ function App() {
                 onMouseEnter={(e) => e.currentTarget.style.background = isDarkTheme ? '#5a9c6e' : '#e0a060'}
                 onMouseLeave={(e) => e.currentTarget.style.background = isDarkTheme ? '#4a7c59' : '#d19250'}
               >
-                Скачать карточку предприятия (PDF)
+                Скачать Карточку предприятия (PDF)
               </a>
             </div>
           </div>
@@ -1254,7 +1302,7 @@ function App() {
               
               <div className="contacts-info-block">
                 <div style={{ marginBottom: '1.2rem' }}>
-                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон</strong>
+                  <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>Телефон приёмной</strong>
                   <p style={{ marginTop: '4px' }}>
                     <a href="tel:+73499728066" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
                       8 (34997) 2-80-66
@@ -1265,8 +1313,8 @@ function App() {
                 <div style={{ marginBottom: '1.2rem' }}>
                   <strong style={{ fontSize: getFontSize(15), color: isDarkTheme ? '#b0d0b0' : '#1e3279' }}>E-mail</strong>
                   <p style={{ marginTop: '4px' }}>
-                    <a href="mailto:zakupki@obpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
-                      zakupki@obpur.ru
+                    <a href="mailto:office@obpur.ru" style={{ color: isDarkTheme ? '#d0d8d0' : '#2a3a4a', textDecoration: 'none', fontSize: getFontSize(14) }}>
+                      office@obpur.ru
                     </a>
                   </p>
                 </div>
@@ -1279,7 +1327,7 @@ function App() {
                   </p>
                 </div>
                 
-                <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.2)' : 'rgba(0,0,0,0.1)'}` }}>
+                {/* <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: `1px solid ${isDarkTheme ? 'rgba(100, 180, 100, 0.2)' : 'rgba(0,0,0,0.1)'}` }}>
                   <p style={{ fontSize: getFontSize(12), color: isDarkTheme ? '#b0d0b0' : '#4a6a7a' }}>
                     <strong>По вопросам приобретения рыбной продукции:</strong>
                   </p>
@@ -1291,7 +1339,7 @@ function App() {
                       +7-951-986-60-36
                     </a>
                   </p>
-                </div>
+                </div> */}
               </div>
               
               <div className="contacts-map-block">
@@ -1302,7 +1350,7 @@ function App() {
                   style={{ border: 0, borderRadius: '16px' }}
                   allowFullScreen
                   loading="lazy"
-                  title="Карта Совхоз Пуровский - г. Тарко-Сале, микрорайон Советский, д. 6А"
+                  title="Карта АО СХ община Пуровская - г. Тарко-Сале, микрорайон Советский, д. 6А"
                 />
                 <div style={{ textAlign: 'center', marginTop: '0.75rem' }}>
                   <a 
@@ -1324,7 +1372,7 @@ function App() {
 
       <footer className="footer">
         <div className="container">
-          <p style={{ fontSize: getFontSize(12) }}>© 2026 Совхоз "Пуровский". Все права защищены.</p>
+          <p style={{ fontSize: getFontSize(12) }}>© 2026 АО "СХ община Пуровская". Все права защищены.</p>
         </div>
       </footer>
     </div>
